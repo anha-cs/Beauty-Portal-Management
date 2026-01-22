@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
+@import '../node_modules/@syncfusion/ej2-base/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-buttons/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-calendars/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-inputs/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-navigations/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-angular-schedule/styles/material.css';
+
+@source "../../src/**/*.{html,ts}";
+
+@theme {
+  --color-brand-pink: #fdf2f2;
+  --color-brand-gold: #d4af37;
+  --font-beauty: "Playfair Display", serif;
+}
+
+/* --- FORCE LAYOUT FIX --- */
+ejs-schedule {
+  display: block !important;
+  min-height: 650px !important;
+  height: 650px !important;
+  width: 100% !important;
+}
+
+/* Force the internal table to occupy space */
+.e-schedule .e-month-view .e-content-wrap,
+.e-schedule .e-month-view .e-content-wrap table {
+  min-height: 550px !important;
+  height: 100% !important;
+  display: table !important;
+}
+
+/* Ensure cells and headers are visible */
+.e-schedule .e-month-view .e-work-cells {
+  height: 100px !important;
+  border: 1px solid #e2e8f0 !important;
+  visibility: visible !important;
+}
+
+.e-schedule .e-month-view .e-date-header {
+  display: block !important;
+  padding: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+}
+
+.custom-block-label {
+  pointer-events: none;
+  z-index: 2;
+}
+
+html, body { height: 100%; width: 100%; margin: 0; font-family: Roboto, sans-serif; }

@@ -1,0 +1,101 @@
+/* Style for blocked appointments */
+.e-schedule .e-appointment.e-block-appointment {
+  background-color: #9e9e9e !important;
+  border-color: #757575 !important;
+  opacity: 0.8;
+}
+
+.e-schedule .e-subject {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Optional: styling for the staff list buttons */
+.artist-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #e91e63;
+  background: white;
+  color: #e91e63;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.artist-btn.active {
+  background: #e91e63;
+  color: white;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* Animation for the table rows */
+tbody tr {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Success Green for 'DONE' status */
+.bg-green-100 {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.custom-block-label {
+  user-select: none;
+}
+
+/* ===============================
+   Syncfusion Month View - TODAY highlight circle (WRAPS THE NUMBER)
+   IMPORTANT: ::ng-deep is needed because Syncfusion renders deep DOM
+   =============================== */
+
+/* remove any default dot/pseudo marker */
+:host ::ng-deep .e-schedule .e-month-view .e-current-date::after,
+:host ::ng-deep .e-schedule .e-month-view .e-current-date::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* ensure header is above cell backgrounds */
+:host ::ng-deep .e-schedule .e-month-view .e-date-header {
+  position: relative !important;
+  z-index: 10 !important;
+  line-height: 1.2 !important;
+}
+
+/* Case A: the header itself has e-current-date */
+:host ::ng-deep .e-schedule .e-month-view .e-date-header.e-current-date {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 9999px !important;
+  background: #ef4444 !important; /* red */
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Case B: the header contains a child with e-current-date */
+:host ::ng-deep .e-schedule .e-month-view .e-date-header .e-current-date {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 9999px !important;
+  background: #ef4444 !important; /* red */
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}

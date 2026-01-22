@@ -1,0 +1,84 @@
+<nav class="w-72 h-screen bg-white border-r border-gray-100 flex flex-col shadow-sm select-none">
+  <div class="p-8 pb-6">
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-8 bg-[#e91e63] rounded-full"></div>
+      <h1 class="text-[#e91e63] font-black text-2xl tracking-tighter uppercase">Dashboard</h1>
+    </div>
+  </div>
+
+  <div class="flex-1 overflow-y-auto px-4 space-y-8">
+
+    <ng-container *ngIf="apiService.hasRole('CUSTOMER')">
+      <div class="space-y-1">
+
+        <button (click)="navigate('customer-info')"
+                [class.active]="currentRoute === 'customer-info'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium">Personal Information</span>
+        </button>
+
+        <button (click)="navigate('appointment-records')"
+                [class.active]="currentRoute === 'appointment-records'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium">Booking Records</span>
+        </button>
+
+        <div class="px-3 pt-4">
+          <button (click)="navigate('new-appointment')"
+                  class="flex items-center justify-center w-full py-3 px-4 bg-[#e91e63] text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#d81b60] hover:shadow-lg hover:shadow-pink-200 transition-all duration-300 active:scale-[0.97]">
+            <span>Book Appointment</span>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="apiService.hasRole('STAFF') || apiService.hasRole('ADMIN')">
+      <div class="space-y-1">
+
+        <button (click)="navigate('staff-info')"
+                [class.active]="currentRoute === 'staff-info'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium text-sm">Staff Directory</span>
+        </button>
+
+        <button (click)="navigate('customer-info')"
+                [class.active]="currentRoute === 'customer-info'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium text-sm">Customer Records</span>
+        </button>
+
+        <button (click)="navigate('appointment-records')"
+                [class.active]="currentRoute === 'appointment-records'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium text-sm">Appointment Records</span>
+        </button>
+
+        <button (click)="navigate('new-appointment')"
+                [class.active]="currentRoute === 'new-appointment'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium text-sm">New Appointments || Schedule</span>
+        </button>
+
+        <button (click)="navigate('system-reports')"
+                [class.active]="currentRoute === 'system-reports'" class="nav-btn group">
+          <span class="nav-indicator"></span>
+          <span class="font-medium text-sm">System Report</span>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="p-4 mt-auto">
+    <div class="bg-gray-50 rounded-2xl p-4 flex items-center justify-between border border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-sm">
+          <span class="text-xs font-bold">{{ userInitial }}</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[11px] font-bold text-gray-800 tracking-tight">{{ userRole }}</span>
+          <span class="text-[9px] text-gray-400 font-semibold uppercase tracking-tighter">Status: Active</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,161 @@
+<div class="min-h-screen bg-slate-50 p-4 md:p-10">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-serif italic text-slate-900">System Report</h1>
+        <p class="text-slate-500 mt-2">
+          Admin and Staff summary cards from live data (non-block records).
+        </p>
+      </div>
+
+      <button (click)="refresh()"
+              class="px-5 py-3 rounded-2xl bg-slate-900 text-white text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition">
+        Refresh
+      </button>
+    </div>
+
+    <!-- Access / Errors -->
+    <div *ngIf="errorMsg && !loading"
+         class="bg-white rounded-3xl border border-slate-100 p-6 text-slate-700 shadow-sm">
+      <p class="font-bold text-red-600">{{ errorMsg }}</p>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading"
+         class="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm">
+      <p class="text-slate-500 font-bold">Loading report...</p>
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="skeleton-card" *ngFor="let _ of [1,2,3,4,5,6]"></div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div *ngIf="!loading && !errorMsg" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div *ngFor="let c of cards"
+           [ngClass]="{
+             'card card-dark': c.tone === 'dark',
+             'card card-pink': c.tone === 'pink',
+             'card card-light': !c.tone || c.tone === 'light'
+           }">
+
+        <p class="card-title">{{ c.title }}</p>
+        <p class="card-value">{{ c.value }}</p>
+        <p *ngIf="c.sub" class="card-sub">{{ c.sub }}</p>
+      </div>
+    </div>
+
+    <!-- ✅ Admin Staff Performance -->
+    <div *ngIf="!loading && !errorMsg && isAdmin" class="mt-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <h2 class="text-lg font-black uppercase tracking-widest text-slate-700">
+          Staff Performance
+        </h2>
+
+        <div class="flex items-center gap-2">
+          <button (click)="setAdminRange('WEEK')"
+                  [class.bg-slate-900]="adminRange === 'WEEK'"
+                  [class.text-white]="adminRange === 'WEEK'"
+                  class="px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all">
+            This Week
+          </button>
+
+          <button (click)="setAdminRange('MONTH')"
+                  [class.bg-slate-900]="adminRange === 'MONTH'"
+                  [class.text-white]="adminRange === 'MONTH'"
+                  class="px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all">
+            This Month
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div *ngIf="adminStaffRows.length === 0" class="p-8 text-slate-400 font-serif italic">
+          No appointments found in this range.
+        </div>
+
+        <div *ngIf="adminStaffRows.length > 0" class="divide-y divide-slate-100">
+          <div *ngFor="let r of adminStaffRows" class="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="min-w-[240px]">
+              <p class="text-slate-900 font-extrabold text-lg">{{ r.staffName || '—' }}</p>
+              <p class="text-xs text-slate-500 mt-1">
+                <strong>{{ r.apptCount }}</strong> appointments •
+                <strong>{{ r.doneCount }}</strong> done
+              </p>
+            </div>
+
+            <div class="flex-1">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                Top Services
+              </p>
+
+              <div class="flex flex-wrap gap-2">
+                <span *ngFor="let s of r.topServices"
+                      class="px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700">
+                  {{ s.name }} <span class="text-slate-400 font-extrabold">×{{ s.count }}</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Revenue (DONE)</p>
+              <p class="text-2xl font-black text-pink-600">{{ money(r.revenueDone) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming -->
+    <div *ngIf="!loading && !errorMsg" class="mt-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-black uppercase tracking-widest text-slate-700">Upcoming (Next 7 Days)</h2>
+        <span class="text-xs text-slate-400 font-bold">{{ upcoming.length }} shown</span>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div *ngIf="upcoming.length === 0" class="p-8 text-slate-400 font-serif italic">
+          No upcoming appointments.
+        </div>
+
+        <div *ngIf="upcoming.length > 0" class="divide-y divide-slate-100">
+          <div *ngFor="let a of upcoming" class="p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div class="flex items-center gap-3">
+              <span class="badge" [ngClass]="{
+                'badge-pending': (a.status || '').toUpperCase() === 'PENDING',
+                'badge-done': (a.status || '').toUpperCase() === 'DONE',
+                'badge-cancelled': (a.status || '').toUpperCase() === 'CANCELLED'
+              }">
+                {{ (a.status || 'PENDING') }}
+              </span>
+
+              <div>
+                <p class="font-extrabold text-slate-800">{{ a.serviceName || 'Service' }}</p>
+
+                <p class="text-xs text-slate-500">
+                  <span *ngIf="isAdmin">
+                    <strong>Artist:</strong> {{ a.staffName || '—' }}
+                    <span *ngIf="a.customerName"> • <strong>Client:</strong> {{ a.customerName }}</span>
+                  </span>
+
+                  <span *ngIf="!isAdmin">
+                    <span *ngIf="a.customerName">
+                      <strong>Client:</strong> {{ a.customerName }}
+                    </span>
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div class="text-sm font-bold text-slate-700">
+              {{ formatDateTime(a.dateTime) }}
+              <span class="ml-2 text-slate-400 font-extrabold">{{ (a.price || 0) | currency }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,301 @@
+<div class="min-h-screen bg-slate-50 p-4 md:p-8 pb-52 md:pb-56">
+  <div *ngIf="showToast" class="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] transition-all duration-300 transform">
+    <div [class]="toastType === 'success' ? 'bg-slate-900' : 'bg-red-600'"
+         class="text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10">
+      <span class="text-pink-400">✦</span>
+      <span class="text-sm font-bold tracking-wide uppercase">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+  <header class="mb-8 px-2 md:px-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-serif italic text-slate-900">
+        {{ isStaff && !isAdmin ? 'Set Availability' : 'New Appointment' }}
+      </h1>
+      <p *ngIf="isStaff && !isAdmin" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+        Staff Mode Only - Choose date(s) to block
+      </p>
+      <p *ngIf="!isStaff || isAdmin" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+        Booking Mode
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div *ngIf="isBlockMode"
+           class="bg-slate-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
+        <span class="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></span>
+        Block Mode Active
+      </div>
+
+      <div *ngIf="!isBlockMode"
+           class="bg-white text-slate-700 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-200 shadow-sm">
+        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+        Booking Active
+      </div>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+    <div class="lg:col-span-1 space-y-6" *ngIf="!isStaff || isAdmin">
+
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">Select Artist</label>
+          <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">
+            {{ selectedStaff ? 'Filtered' : 'All' }}
+          </span>
+        </div>
+
+        <div class="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          <button *ngFor="let s of allStaffRaw"
+                  (click)="onStaffChange(s)"
+                  [class.bg-slate-900]="selectedStaff === s"
+                  [class.text-white]="selectedStaff === s"
+                  [class.border-slate-900]="selectedStaff === s"
+                  class="shrink-0 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest
+                         transition-all text-slate-700 hover:bg-slate-50">
+            {{ s.firstName }}
+          </button>
+
+          <button (click)="onStaffChange(null)"
+                  [class.bg-slate-900]="selectedStaff === null"
+                  [class.text-white]="selectedStaff === null"
+                  [class.border-slate-900]="selectedStaff === null"
+                  class="shrink-0 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest
+                         transition-all text-slate-400 hover:text-slate-700 hover:border-slate-300">
+            All
+          </button>
+        </div>
+      </section>
+
+      <section *ngIf="isAdmin" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+        <label class="text-[10px] font-bold text-slate-400 uppercase mb-3 block">Select Customer</label>
+        <select class="w-full rounded-xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition"
+                [(ngModel)]="selectedCustomer">
+          <option [ngValue]="null">Choose customer</option>
+          <option *ngFor="let c of customers" [ngValue]="c">
+            {{ c.firstName }} {{ c.lastName }}
+          </option>
+        </select>
+      </section>
+
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">Select Services</label>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              {{ selectedServices.length }} selected
+            </span>
+          </div>
+        </div>
+
+        <details *ngIf="isAdmin" class="mb-4 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+          <summary class="cursor-pointer select-none px-4 py-3 flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase tracking-widest text-slate-600">Add Service</span>
+            <span class="text-xs text-slate-400">▼</span>
+          </summary>
+
+          <div class="p-4 pt-0">
+            <div class="grid grid-cols-1 gap-2">
+              <input [(ngModel)]="newServiceName"
+                     placeholder="Service name"
+                     class="p-3 rounded-xl ring-1 ring-slate-200 bg-white outline-none text-sm focus:ring-2 focus:ring-pink-300 transition"/>
+
+              <div class="grid grid-cols-2 gap-2">
+                <input [(ngModel)]="newServicePrice" type="number"
+                       placeholder="Price"
+                       class="p-3 rounded-xl ring-1 ring-slate-200 bg-white outline-none text-sm focus:ring-2 focus:ring-pink-300 transition"/>
+
+                <input [(ngModel)]="newServiceIcon"
+                       placeholder="Icon (optional)"
+                       class="p-3 rounded-xl ring-1 ring-slate-200 bg-white outline-none text-sm text-center focus:ring-2 focus:ring-pink-300 transition"/>
+              </div>
+
+              <button (click)="addService()"
+                      class="bg-slate-900 text-white px-4 py-3 rounded-xl font-bold uppercase text-[11px] hover:bg-slate-800 transition">
+                Add
+              </button>
+            </div>
+
+            <div class="mt-3 flex items-center gap-2 flex-wrap">
+              <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mr-1">Default Icons</span>
+              <button *ngFor="let ic of defaultIcons"
+                      (click)="newServiceIcon = ic"
+                      class="w-10 h-10 rounded-xl bg-white ring-1 ring-slate-200 hover:ring-pink-300 transition text-lg">
+                {{ ic }}
+              </button>
+            </div>
+          </div>
+        </details>
+
+        <div class="max-h-[42vh] overflow-y-auto overflow-x-auto pr-1 custom-scrollbar">
+          <div class="space-y-2 min-w-max p-1">
+            <div *ngFor="let svc of services"
+                 (click)="toggleService(svc)"
+                 [class.border-pink-200]="selectedServices.includes(svc)"
+                 [class.bg-pink-50]="selectedServices.includes(svc)"
+                 class="p-3 border rounded-2xl cursor-pointer flex justify-between items-center gap-8 transition-all hover:shadow-sm hover:border-slate-200">
+
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 shrink-0 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-lg">
+                  {{ svc.icon || '✨' }}
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="text-sm font-extrabold text-slate-800 whitespace-nowrap">{{ svc.name }}</span>
+                  <span class="text-[11px] text-slate-400 font-bold">${{ svc.price }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 shrink-0">
+                <div *ngIf="selectedServices.includes(svc)"
+                     class="w-7 h-7 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-black">
+                  ✓
+                </div>
+
+                <button *ngIf="isAdmin"
+                        (click)="$event.stopPropagation(); deleteService(svc)"
+                        class="text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-slate-200 text-slate-500 hover:text-red-600 hover:border-red-200 hover:bg-white transition whitespace-nowrap">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div [class.lg:col-span-3]="!isStaff || isAdmin"
+         [class.lg:col-span-4]="isStaff && !isAdmin"
+         class="space-y-6">
+
+      <div class="bg-white p-4 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Pick a Date</p>
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-300">
+            Scroll → to see more artists
+          </p>
+        </div>
+
+        <div class="w-full overflow-x-auto overflow-y-hidden rounded-2xl ring-1 ring-slate-100">
+          <div class="min-w-[1100px]">
+            <ejs-schedule #scheduleObj width="100%" height="650px" currentView="Month"
+                          [group]="group" [eventSettings]="eventSettings"
+                          (cellClick)="onCellClick($event)"
+                          (renderCell)="onRenderCell($event)"
+                          (popupOpen)="onPopupOpen($event)">
+              <e-views><e-view option="Month"></e-view></e-views>
+
+              <e-resources *ngIf="staffResourceData && staffResourceData.length > 0">
+                <e-resource field="StaffId" title="Artist" name="Staffs"
+                            [dataSource]="staffResourceData"
+                            textField="text" idField="id" colorField="color">
+                </e-resource>
+              </e-resources>
+            </ejs-schedule>
+          </div>
+        </div>
+      </div>
+
+      <section *ngIf="!isBlockMode" class="bg-white p-5 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Booking Details</p>
+            <p class="text-sm font-extrabold text-slate-800 mt-1">
+              {{ selectedSlots.length > 0 ? (selectedSlots[0].date | date:'EEEE, MMM d, y') : 'Pick a date first' }}
+            </p>
+          </div>
+
+          <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Step 2</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="md:col-span-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Location</label>
+            <input [(ngModel)]="location"
+                   placeholder="Studio (default) / Your Address"
+                   class="w-full rounded-2xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition" />
+          </div>
+
+          <div class="md:col-span-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Time</label>
+            <select [(ngModel)]="selectedTime"
+                    class="w-full rounded-2xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition">
+              <option [ngValue]="null">Choose time</option>
+              <option *ngFor="let t of availableTimes" [ngValue]="t">{{ t }}</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-3">
+            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Notes (Optional)</label>
+            <textarea [(ngModel)]="notes"
+                      rows="3"
+                      placeholder="Anything the artist should know…"
+                      class="w-full rounded-2xl p-4 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition resize-none"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            Tip: pick date → pick time → confirm.
+          </p>
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            Total: ${{ totalAmount }}
+          </p>
+        </div>
+        <p class="mt-12 text-[10px] font-bold uppercase tracking-widest text-red-400 leading-relaxed">
+          Please note that a deposit of 50% total price (NON-REFUNDABLE and NON-TRANSFERABLE)
+          has to be sent to secure the dates after booking. Contract will be sent via your email.
+          Dates are not guaranteed or held without a contract AND deposit.
+        </p>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-red-400 leading-relaxed">
+          Zelle/ Venmo: (669) 296 - 9115 (Nguyen Ha)
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <div
+    class="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 w-[94%] md:w-[92%] max-w-5xl
+           bg-slate-900/95 backdrop-blur
+           shadow-2xl rounded-3xl p-4 md:p-5
+           z-[1000] text-white
+           border border-white/10"
+  >
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-6 md:gap-10 px-1 md:px-4">
+        <div class="min-w-[160px]">
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Date</p>
+          <p class="text-sm font-bold text-pink-400">
+            {{ selectedSlots.length > 0 ? (selectedSlots[0].date | date:'MMMM d, y') : 'Choose a date' }}
+          </p>
+        </div>
+
+        <div *ngIf="!isBlockMode" class="min-w-[140px]">
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Services</p>
+          <p class="text-sm font-bold text-white">{{ selectedServices.length }} selected</p>
+        </div>
+
+        <div *ngIf="!isBlockMode" class="min-w-[120px]">
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
+          <p class="text-sm font-bold text-white">${{ totalAmount }}</p>
+        </div>
+      </div>
+
+      <button
+        (click)="submitAction()"
+        [disabled]="selectedSlots.length === 0"
+        class="w-full md:w-auto
+               bg-white text-slate-900
+               px-6 md:px-12 py-3
+               rounded-2xl
+               font-bold uppercase text-[11px]
+               hover:bg-pink-50 transition-colors
+               disabled:opacity-20 disabled:cursor-not-allowed"
+      >
+        {{ isBlockMode ? 'Save Schedule' : 'Confirm Booking' }}
+      </button>
+    </div>
+  </div>
+</div>
