@@ -37,3 +37,7 @@ logging:
   level:
     root: INFO
     org.springframework.data.mongodb: INFO
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:4200}

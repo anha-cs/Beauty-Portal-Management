@@ -1,6 +1,7 @@
 package com.beautybynguyenha.booking_system.config;
 
 import com.beautybynguyenha.booking_system.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Value; // Required for variable injection
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,10 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final AuthTokenFilter authTokenFilter;
+
+    // Injects the frontend URL from application.yml
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService, AuthTokenFilter authTokenFilter) {
         this.userDetailsService = userDetailsService;
@@ -58,17 +63,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // PUBLIC PATHS: Everyone can access
+                        // PUBLIC PATHS
                         .requestMatchers("/api/auth/**", "/api/staff/all", "/api/appointments/all").permitAll()
+                        .requestMatchers("/api/services/all").permitAll()
 
-                        // ADMIN PATHS: Restricted
+                        // ADMIN PATHS
                         .requestMatchers("/api/staff/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        .requestMatchers("/api/services/add", "/api/services/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
-                        // AUTHENTICATED PATHS: Logged-in only
+                        // AUTHENTICATED PATHS
                         .requestMatchers("/api/appointments/book").authenticated()
                         .requestMatchers("/api/staff/me").authenticated()
-                        .requestMatchers("/api/services/all").permitAll() // Allow everyone to see services
-                        .requestMatchers("/api/services/add", "/api/services/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN") // Only Admin can add/delete
 
                         .anyRequest().authenticated()
                 );
@@ -82,10 +87,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+
+        config.setAllowedOrigins(List.of(frontendUrl));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
