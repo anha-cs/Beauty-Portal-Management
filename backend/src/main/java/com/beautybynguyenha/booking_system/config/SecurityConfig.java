@@ -63,19 +63,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // PUBLIC PATHS
+                        // 1. Pre-flight (Must be first)
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 2. Auth Endpoints
+                        .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/auth/**").permitAll()
+
+                        // 3. Static Resources
                         .requestMatchers("/", "/index.html", "/*.js", "/*.css", "/*.png", "/*.jpg", "/*.ico", "/*.json", "/assets/**").permitAll()
-                        .requestMatchers("/api/auth/**", "/api/staff/all", "/api/appointments/all").permitAll()
-                        .requestMatchers("/api/services/all").permitAll()
 
-                        // ADMIN PATHS
-                        .requestMatchers("/api/staff/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                        .requestMatchers("/api/services/add", "/api/services/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        // 4. Public API data
+                        .requestMatchers("/api/staff/all", "/api/appointments/all", "/api/services/all").permitAll()
 
-                        // AUTHENTICATED PATHS
-                        .requestMatchers("/api/appointments/book").authenticated()
-                        .requestMatchers("/api/staff/me").authenticated()
+                        // 5. Protected (Admin & Auth)
+                        .requestMatchers("/api/staff/admin/**", "/api/services/add", "/api/services/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        .requestMatchers("/api/appointments/book", "/api/staff/me").authenticated()
 
                         .anyRequest().authenticated()
                 );
@@ -90,7 +92,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(frontendUrl));
+        config.setAllowedOrigins(List.of(frontendUrl, "https://www.beautybynguyenha.com",
+                "https://beautybynguyenha.com"));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
