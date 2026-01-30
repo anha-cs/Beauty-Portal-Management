@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/auth/**").permitAll()
 
                         // 3. Static Resources
-                        .requestMatchers("/", "/index.html", "/*.js", "/*.css", "/*.png", "/*.jpg", "/*.ico", "/*.json", "/assets/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/login", "/*.js", "/*.css", "/*.png", "/*.jpg", "/*.ico", "/*.json", "/assets/**").permitAll()
 
                         // 4. Public API data
                         .requestMatchers("/api/staff/all", "/api/appointments/all", "/api/services/all").permitAll()

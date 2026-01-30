@@ -35,11 +35,6 @@ export class NavbarComponent implements OnInit {
   handleLogout() {
     // 1. Clear the data
     this.apiService.logout();
-
-    // 2. Redirect the user
-    this.router.navigateByUrl('/dashboard').then(() => {
-      // 3. Optional: refresh the view if needed
-      window.location.reload();
-    });
+    window.location.href = '/';
   }
 }
