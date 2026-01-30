@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
@@ -58,7 +60,9 @@ export class ResetPasswordComponent implements OnInit {
       newPassword: this.password
     };
 
-    this.http.post('http://localhost:8080/api/auth/reset-password', payload)
+    const resetUrl = `${environment.apiUrl}/api/auth/reset-password`;
+
+    this.http.post(resetUrl, payload)
       .subscribe({
         next: (res: any) => {
           this.loading = false;
@@ -69,7 +73,7 @@ export class ResetPasswordComponent implements OnInit {
         },
         error: (err) => {
           this.loading = false;
-          this.errorMessage = err.error?.message || 'An error occurred.';
+          this.errorMessage = err.error?.message || err.error || 'An error occurred while resetting your password.';
         }
       });
   }

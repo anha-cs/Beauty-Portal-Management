@@ -1,5 +1,8 @@
+import { environment } from '../../environments/environment';
+
 export class Constants {
-  public static readonly BASE_API_URL = 'http://localhost:8080/api';
+  // Change the hardcoded string to use the environment variable
+  public static readonly BASE_API_URL = environment.apiUrl + '/api';
 
   public static readonly SIGNUP_SESSION_STORAGE_ID = 'SIGNUP_DATA';
   public static readonly SIGNUP_ENDPOINT = '/signup';

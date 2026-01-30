@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = `${environment.apiUrl}/api`;
 
   private loginStatus = new Subject<void>();
   loginStatus$ = this.loginStatus.asObservable();
@@ -40,7 +41,6 @@ export class ApiService {
     if (!userStr || userStr === 'undefined' || userStr === 'null') return '';
     try {
       const user = JSON.parse(userStr);
-      // If id/id_ is missing, use email as a fallback unique identifier
       const id = user.id || user._id || user.email || '';
       return id.toString();
     } catch (e) {
@@ -70,11 +70,16 @@ export class ApiService {
     }
   }
 
+  /**
+   * Builds the full URL dynamically based on the environment.
+   */
   private buildUrl(url: string): string {
     if (url.startsWith('http')) return url;
+
     if (url.startsWith('/api')) {
-      return `http://localhost:8080${url}`;
+      return `${environment.apiUrl}${url}`;
     }
+
     const cleanPath = url.startsWith('/') ? url : `/${url}`;
     return `${this.baseUrl}${cleanPath}`;
   }
@@ -85,19 +90,13 @@ export class ApiService {
     return this.http.get<T>(this.buildUrl(url), { headers: this.getHeaders() });
   }
 
-  /**
-   * UPDATED: Accepts an optional options object.
-   * Usage: this.apiService.post('/url', body, { responseType: 'text' })
-   */
   post<T>(url: string, body: any, options: any = {}): Observable<T> {
     let headers = this.getHeaders();
 
-    // If we expect text, remove the JSON Content-Type
     if (options.responseType === 'text') {
       headers = headers.delete('Content-Type');
     }
 
-    // Use (this.http.post(...) as any) to prevent the "HttpEvent" type error
     return this.http.post(this.buildUrl(url), body, {
       headers: headers,
       ...options

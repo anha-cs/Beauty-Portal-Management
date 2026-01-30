@@ -9,9 +9,7 @@
 @import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-angular-schedule/styles/material.css';
 
-@source "../../src/**/*.{html,ts}";
-
-@theme {
+@layer theme {
   --color-brand-pink: #fdf2f2;
   --color-brand-gold: #d4af37;
   --font-beauty: "Playfair Display", serif;
