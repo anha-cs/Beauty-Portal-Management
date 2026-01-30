@@ -2,7 +2,7 @@
 nixPkgs = ["jdk21", "maven"]
 
 [phases.build]
-cmds = ["cd backend && ./mvnw -DskipTests clean package"]
+cmds = ["./mvnw -DskipTests clean package"]
 
 [start]
-cmd = "java -jar backend/target/app.jar"
+cmd = "java -jar target/app.jar"
