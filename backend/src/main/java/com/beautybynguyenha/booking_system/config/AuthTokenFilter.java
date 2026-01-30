@@ -68,4 +68,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         return null;
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.endsWith(".js") ||
+                path.endsWith(".css") ||
+                path.endsWith(".png") ||
+                path.endsWith(".jpg") ||
+                path.equals("/") ||
+                path.equals("/index.html");
+    }
 }
