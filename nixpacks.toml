@@ -1,4 +1,5 @@
 [phases.setup]
 nixPkgs = ["jdk21", "maven"]
 
-[phases.build] cmds = ["cd booking-system && ./mvnw -DskipTests clean package"]
+[phases.build]
+cmds = ["cd booking-system && ./mvnw -DskipTests clean package"]
