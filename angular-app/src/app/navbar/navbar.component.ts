@@ -37,7 +37,7 @@ export class NavbarComponent implements OnInit {
     this.apiService.logout();
 
     // 2. Redirect the user
-    this.router.navigateByUrl('/').then(() => {
+    this.router.navigateByUrl('/dashboard').then(() => {
       // 3. Optional: refresh the view if needed
       window.location.reload();
     });
