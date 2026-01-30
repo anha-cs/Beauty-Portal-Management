@@ -5,4 +5,4 @@ nixPkgs = ["jdk21", "maven"]
 cmds = ["./mvnw -DskipTests clean package"]
 
 [start]
-cmd = "java -jar target/app.jar"
+cmd = "java -jar target/backend-exec.jar"
