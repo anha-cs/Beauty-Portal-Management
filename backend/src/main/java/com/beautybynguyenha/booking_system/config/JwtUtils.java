@@ -13,7 +13,7 @@ public class JwtUtils {
 
     // Must be at least 64 characters long for HS512
     private final String jwtSecret = "yourSecureKeyForEncryptionMakeItVeryLongAndSecure12345678901234567890123456789012";
-    private final int jwtExpirationMs = 86400000; // 24 hours
+    private final int jwtExpirationMs = 600000; // 10 minutes
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
