@@ -17,9 +17,11 @@
 
   <aside
     [class.translate-x-0]="isSideNavOpen"
-    [class.-translate-x-[105%]]="!isSideNavOpen"
-    class="fixed inset-y-0 left-0 z-[150] w-64 bg-white border-r border-slate-100 transform transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none invisible-scrollbar"
-    [ngClass]="{'border-none shadow-none': !isSideNavOpen}">
+    [class.opacity-100]="isSideNavOpen"
+    [class.-translate-x-[110%]]="!isSideNavOpen"
+    [class.opacity-0]="!isSideNavOpen"
+    [class.invisible]="!isSideNavOpen"
+    class="fixed inset-y-0 left-0 z-[150] w-64 bg-white border-r border-slate-100 transform transition-all duration-300 ease-in-out shadow-2xl md:shadow-none">
 
     <div class="flex flex-col w-full h-full">
       <app-side-navbar (click)="isSideNavOpen = false"></app-side-navbar>
