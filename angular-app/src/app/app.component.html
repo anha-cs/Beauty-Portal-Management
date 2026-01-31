@@ -1,20 +1,40 @@
-<app-navbar></app-navbar>
+<app-navbar
+  (sidebarToggle)="isSideNavOpen = !isSideNavOpen"
+  class="fixed top-0 right-0 z-[140] transition-all duration-300 ease-in-out border-b border-slate-100 bg-white/80 backdrop-blur-md"
+  [ngClass]="{
+    'left-0': !isSideNavOpen,
+    'left-0 md:ml-64': isSideNavOpen
+  }"
+  [style.width]="isSideNavOpen ? 'calc(100% - 16rem)' : '100%'">
+</app-navbar>
 
-<div class="flex min-h-screen bg-[#FAF7F2]">
+<div class="flex min-h-screen bg-[#FAF7F2] overflow-x-hidden">
 
-  <app-side-navbar
-    *ngIf="apiService.isLoggedIn()"
-    class="flex-shrink-0 border-r border-brand-pink/10">
-  </app-side-navbar>
+  <div *ngIf="isSideNavOpen"
+       (click)="isSideNavOpen = false"
+       class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[145] md:hidden transition-opacity duration-300">
+  </div>
 
-  <main class="flex-1 relative">
-    <div class="p-6 md:p-10">
+  <aside
+    [class.translate-x-0]="isSideNavOpen"
+    [class.-translate-x-[105%]]="!isSideNavOpen"
+    class="fixed inset-y-0 left-0 z-[150] w-64 bg-white border-r border-slate-100 transform transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none invisible-scrollbar"
+    [ngClass]="{'border-none shadow-none': !isSideNavOpen}">
+
+    <div class="flex flex-col w-full h-full">
+      <app-side-navbar (click)="isSideNavOpen = false"></app-side-navbar>
+    </div>
+  </aside>
+
+  <main
+    class="flex-1 pt-24 md:pt-24 transition-all duration-300 ease-in-out min-w-0"
+    [ngClass]="{
+      'md:ml-64': isSideNavOpen,
+      'ml-0': !isSideNavOpen
+    }">
+
+    <div class="p-4 sm:p-6 md:p-10 lg:p-12 w-full max-w-[1400px] mx-auto">
       <router-outlet></router-outlet>
     </div>
-
-    <div class="fixed bottom-4 right-4 opacity-10 pointer-events-none">
-      <h2 class="font-beauty italic text-6xl text-brand-gold">Ha</h2>
-    </div>
   </main>
-
 </div>

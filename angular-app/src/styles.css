@@ -52,3 +52,11 @@ ejs-schedule {
 }
 
 html, body { height: 100%; width: 100%; margin: 0; font-family: Roboto, sans-serif; }
+
+@media (max-width: 768px) {
+  /* This ensures the sidebar is always on the very top for mobile users */
+  aside {
+    height: 100vh !important;
+    top: 0 !important;
+  }
+}

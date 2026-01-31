@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-slate-50 p-4 md:p-8 pb-52 md:pb-56">
-  <div *ngIf="showToast" class="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] transition-all duration-300 transform">
+  <div *ngIf="showToast" class="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] transition-all duration-300 transform w-[90%] md:w-auto">
     <div [class]="toastType === 'success' ? 'bg-slate-900' : 'bg-red-600'"
          class="text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10">
       <span class="text-pink-400">✦</span>
@@ -12,25 +12,17 @@
       <h1 class="text-3xl md:text-4xl font-serif italic text-slate-900">
         {{ isStaff && !isAdmin ? 'Set Availability' : 'New Appointment' }}
       </h1>
-      <p *ngIf="isStaff && !isAdmin" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-        Staff Mode Only - Choose date(s) to block
-      </p>
-      <p *ngIf="!isStaff || isAdmin" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-        Booking Mode
+      <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+        {{ (isStaff && !isAdmin) ? 'Staff Mode Only - Choose date(s) to block' : 'Booking Mode' }}
       </p>
     </div>
 
     <div class="flex items-center gap-2">
-      <div *ngIf="isBlockMode"
-           class="bg-slate-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
-        <span class="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></span>
-        Block Mode Active
+      <div *ngIf="isBlockMode" class="bg-slate-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
+        <span class="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></span> Block Mode Active
       </div>
-
-      <div *ngIf="!isBlockMode"
-           class="bg-white text-slate-700 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-200 shadow-sm">
-        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-        Booking Active
+      <div *ngIf="!isBlockMode" class="bg-white text-slate-700 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-200 shadow-sm">
+        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Booking Active
       </div>
     </div>
   </header>
@@ -40,30 +32,15 @@
     <div class="lg:col-span-1 space-y-6" *ngIf="!isStaff || isAdmin">
 
       <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="flex items-center justify-between mb-3">
-          <label class="text-[10px] font-bold text-slate-400 uppercase block">Select Artist</label>
-          <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">
-            {{ selectedStaff ? 'Filtered' : 'All' }}
-          </span>
-        </div>
-
-        <div class="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          <button *ngFor="let s of allStaffRaw"
-                  (click)="onStaffChange(s)"
-                  [class.bg-slate-900]="selectedStaff === s"
-                  [class.text-white]="selectedStaff === s"
-                  [class.border-slate-900]="selectedStaff === s"
-                  class="shrink-0 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest
-                         transition-all text-slate-700 hover:bg-slate-50">
+        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-3">Select Artist</label>
+        <div class="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+          <button *ngFor="let s of allStaffRaw" (click)="onStaffChange(s)"
+                  [class.bg-slate-900]="selectedStaff === s" [class.text-white]="selectedStaff === s"
+                  class="shrink-0 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all">
             {{ s.firstName }}
           </button>
-
-          <button (click)="onStaffChange(null)"
-                  [class.bg-slate-900]="selectedStaff === null"
-                  [class.text-white]="selectedStaff === null"
-                  [class.border-slate-900]="selectedStaff === null"
-                  class="shrink-0 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest
-                         transition-all text-slate-400 hover:text-slate-700 hover:border-slate-300">
+          <button (click)="onStaffChange(null)" [class.bg-slate-900]="selectedStaff === null" [class.text-white]="selectedStaff === null"
+                  class="shrink-0 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all">
             All
           </button>
         </div>
@@ -71,23 +48,16 @@
 
       <section *ngIf="isAdmin" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
         <label class="text-[10px] font-bold text-slate-400 uppercase mb-3 block">Select Customer</label>
-        <select class="w-full rounded-xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition"
-                [(ngModel)]="selectedCustomer">
+        <select class="w-full rounded-xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300" [(ngModel)]="selectedCustomer">
           <option [ngValue]="null">Choose customer</option>
-          <option *ngFor="let c of customers" [ngValue]="c">
-            {{ c.firstName }} {{ c.lastName }}
-          </option>
+          <option *ngFor="let c of customers" [ngValue]="c">{{ c.firstName }} {{ c.lastName }}</option>
         </select>
       </section>
 
       <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="flex items-center justify-between mb-3">
           <label class="text-[10px] font-bold text-slate-400 uppercase block">Select Services</label>
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {{ selectedServices.length }} selected
-            </span>
-          </div>
+          <span class="text-[10px] font-black uppercase text-slate-500">{{ selectedServices.length }} selected</span>
         </div>
 
         <details *ngIf="isAdmin" class="mb-4 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
@@ -95,69 +65,42 @@
             <span class="text-[10px] font-black uppercase tracking-widest text-slate-600">Add Service</span>
             <span class="text-xs text-slate-400">▼</span>
           </summary>
-
-          <div class="p-4 pt-0">
-            <div class="grid grid-cols-1 gap-2">
-              <input [(ngModel)]="newServiceName"
-                     placeholder="Service name"
-                     class="p-3 rounded-xl ring-1 ring-slate-200 bg-white outline-none text-sm focus:ring-2 focus:ring-pink-300 transition"/>
-
-              <div class="grid grid-cols-2 gap-2">
-                <input [(ngModel)]="newServicePrice" type="number"
-                       placeholder="Price"
-                       class="p-3 rounded-xl ring-1 ring-slate-200 bg-white outline-none text-sm focus:ring-2 focus:ring-pink-300 transition"/>
-
-                <input [(ngModel)]="newServiceIcon"
-                       placeholder="Icon (optional)"
-                       class="p-3 rounded-xl ring-1 ring-slate-200 bg-white outline-none text-sm text-center focus:ring-2 focus:ring-pink-300 transition"/>
-              </div>
-
-              <button (click)="addService()"
-                      class="bg-slate-900 text-white px-4 py-3 rounded-xl font-bold uppercase text-[11px] hover:bg-slate-800 transition">
-                Add
+          <div class="p-4 pt-0 space-y-2">
+            <input [(ngModel)]="newServiceName" placeholder="Service name" class="w-full p-3 rounded-xl ring-1 ring-slate-200 text-sm outline-none bg-white"/>
+            <div class="grid grid-cols-2 gap-2">
+              <input [(ngModel)]="newServicePrice" type="number" placeholder="Price" class="p-3 rounded-xl ring-1 ring-slate-200 text-sm outline-none bg-white"/>
+              <input [(ngModel)]="newServiceIcon" placeholder="Icon" class="p-3 rounded-xl ring-1 ring-slate-200 text-sm text-center outline-none bg-white"/>
+            </div>
+            <div class="flex flex-wrap gap-1 py-2">
+              <button *ngFor="let ic of defaultIcons" (click)="newServiceIcon = ic" class="text-lg p-1 hover:scale-110 transition">
+                {{ic}}
               </button>
             </div>
-
-            <div class="mt-3 flex items-center gap-2 flex-wrap">
-              <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mr-1">Default Icons</span>
-              <button *ngFor="let ic of defaultIcons"
-                      (click)="newServiceIcon = ic"
-                      class="w-10 h-10 rounded-xl bg-white ring-1 ring-slate-200 hover:ring-pink-300 transition text-lg">
-                {{ ic }}
-              </button>
-            </div>
+            <button (click)="addService()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Add to List</button>
           </div>
         </details>
 
-        <div class="max-h-[42vh] overflow-y-auto overflow-x-auto pr-1 custom-scrollbar">
-          <div class="space-y-2 min-w-max p-1">
+        <div class="max-h-[40vh] overflow-y-auto pr-1 custom-scrollbar">
+          <div class="space-y-2 p-1">
             <div *ngFor="let svc of services"
-                 (click)="toggleService(svc)"
-                 [class.border-pink-200]="selectedServices.includes(svc)"
-                 [class.bg-pink-50]="selectedServices.includes(svc)"
-                 class="p-3 border rounded-2xl cursor-pointer flex justify-between items-center gap-8 transition-all hover:shadow-sm hover:border-slate-200">
+                 class="p-3 border rounded-2xl flex justify-between items-center transition-all hover:bg-slate-50"
+                 [class.border-pink-200]="selectedServices.includes(svc)" [class.bg-pink-50]="selectedServices.includes(svc)">
 
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3 cursor-pointer flex-1" (click)="toggleService(svc)">
                 <div class="w-9 h-9 shrink-0 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-lg">
                   {{ svc.icon || '✨' }}
                 </div>
-
                 <div class="flex flex-col">
-                  <span class="text-sm font-extrabold text-slate-800 whitespace-nowrap">{{ svc.name }}</span>
+                  <span class="text-sm font-extrabold text-slate-800">{{ svc.name }}</span>
                   <span class="text-[11px] text-slate-400 font-bold">${{ svc.price }}</span>
                 </div>
               </div>
 
-              <div class="flex items-center gap-3 shrink-0">
-                <div *ngIf="selectedServices.includes(svc)"
-                     class="w-7 h-7 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-black">
-                  ✓
-                </div>
-
-                <button *ngIf="isAdmin"
-                        (click)="$event.stopPropagation(); deleteService(svc)"
-                        class="text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-slate-200 text-slate-500 hover:text-red-600 hover:border-red-200 hover:bg-white transition whitespace-nowrap">
-                  Delete
+              <div class="flex items-center gap-2">
+                <div *ngIf="selectedServices.includes(svc)" class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-[10px]">✓</div>
+                <button *ngIf="isAdmin" (click)="deleteService(svc); $event.stopPropagation()"
+                        class="p-2 text-slate-300 hover:text-red-500 transition-colors">
+                  <span class="text-[10px] font-black uppercase">✕</span>
                 </button>
               </div>
             </div>
@@ -166,28 +109,23 @@
       </section>
     </div>
 
-    <div [class.lg:col-span-3]="!isStaff || isAdmin"
-         [class.lg:col-span-4]="isStaff && !isAdmin"
-         class="space-y-6">
+    <div [class.lg:col-span-3]="!isStaff || isAdmin" [class.lg:col-span-4]="isStaff && !isAdmin" class="space-y-6">
 
       <div class="bg-white p-4 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between mb-3 px-1">
           <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Pick a Date</p>
-          <p class="text-[10px] font-black uppercase tracking-widest text-slate-300">
-            Scroll → to see more artists
-          </p>
+          <p class="text-[9px] lg:hidden font-black uppercase text-pink-400 animate-pulse">Scroll Right →</p>
         </div>
 
-        <div class="w-full overflow-x-auto overflow-y-hidden rounded-2xl ring-1 ring-slate-100">
-          <div class="min-w-[1100px]">
+        <div class="w-full overflow-x-auto rounded-2xl ring-1 ring-slate-100">
+          <div class="min-w-[900px] lg:min-w-full">
             <ejs-schedule #scheduleObj width="100%" height="650px" currentView="Month"
                           [group]="group" [eventSettings]="eventSettings"
                           (cellClick)="onCellClick($event)"
                           (renderCell)="onRenderCell($event)"
                           (popupOpen)="onPopupOpen($event)">
               <e-views><e-view option="Month"></e-view></e-views>
-
-              <e-resources *ngIf="staffResourceData && staffResourceData.length > 0">
+              <e-resources *ngIf="staffResourceData?.length">
                 <e-resource field="StaffId" title="Artist" name="Staffs"
                             [dataSource]="staffResourceData"
                             textField="text" idField="id" colorField="color">
@@ -198,103 +136,60 @@
         </div>
       </div>
 
-      <section *ngIf="!isBlockMode" class="bg-white p-5 md:p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Booking Details</p>
-            <p class="text-sm font-extrabold text-slate-800 mt-1">
-              {{ selectedSlots.length > 0 ? (selectedSlots[0].date | date:'EEEE, MMM d, y') : 'Pick a date first' }}
-            </p>
-          </div>
+      <section *ngIf="!isBlockMode" class="bg-white p-5 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Step 2: Complete Details</p>
 
-          <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Step 2</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div class="md:col-span-1">
-            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Location</label>
-            <input [(ngModel)]="location"
-                   placeholder="Studio (default) / Your Address"
-                   class="w-full rounded-2xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition" />
-          </div>
-
-          <div class="md:col-span-1">
-            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Time</label>
-            <select [(ngModel)]="selectedTime"
-                    class="w-full rounded-2xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Appointment Time</label>
+            <select [(ngModel)]="selectedTime" class="w-full rounded-xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition">
               <option [ngValue]="null">Choose time</option>
               <option *ngFor="let t of availableTimes" [ngValue]="t">{{ t }}</option>
             </select>
           </div>
 
-          <div class="md:col-span-3">
-            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Notes (Optional)</label>
-            <textarea [(ngModel)]="notes"
-                      rows="3"
-                      placeholder="Anything the artist should know…"
-                      class="w-full rounded-2xl p-4 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition resize-none"></textarea>
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Location</label>
+            <input [(ngModel)]="location" placeholder="Studio (default) / Address" class="w-full rounded-xl p-3 text-sm ring-1 ring-slate-200 bg-white outline-none focus:ring-2 focus:ring-pink-300 transition" />
+          </div>
+
+          <div class="md:col-span-2 space-y-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Notes for the Artist</label>
+            <textarea [(ngModel)]="notes" rows="3" placeholder="Reference photos, skin types, etc..." class="w-full rounded-xl p-4 text-sm ring-1 ring-slate-200 bg-white resize-none outline-none focus:ring-2 focus:ring-pink-300 transition"></textarea>
           </div>
         </div>
 
-        <div class="mt-4 flex items-center justify-between">
-          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            Tip: pick date → pick time → confirm.
+        <div class="mt-8 p-6 bg-red-50/50 rounded-2xl border border-red-100">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-red-500 leading-relaxed mb-1">
+            ⚠️ 50% non-refundable deposit required
           </p>
-          <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">
-            Total: ${{ totalAmount }}
-          </p>
+          <p class="text-[11px] font-black text-slate-700">Zelle/ Venmo: (669) 296 - 9115 (Nguyen Ha)</p>
         </div>
-        <p class="mt-12 text-[10px] font-bold uppercase tracking-widest text-red-400 leading-relaxed">
-          Please note that a deposit of 50% total price (NON-REFUNDABLE and NON-TRANSFERABLE)
-          has to be sent to secure the dates after booking. Contract will be sent via your email.
-          Dates are not guaranteed or held without a contract AND deposit.
-        </p>
-        <p class="text-[10px] font-bold uppercase tracking-widest text-red-400 leading-relaxed">
-          Zelle/ Venmo: (669) 296 - 9115 (Nguyen Ha)
-        </p>
       </section>
     </div>
   </div>
 
-  <div
-    class="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 w-[94%] md:w-[92%] max-w-5xl
-           bg-slate-900/95 backdrop-blur
-           shadow-2xl rounded-3xl p-4 md:p-5
-           z-[1000] text-white
-           border border-white/10"
-  >
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div class="flex flex-wrap items-center gap-6 md:gap-10 px-1 md:px-4">
-        <div class="min-w-[160px]">
-          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Date</p>
+  <div class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[94%] max-w-5xl bg-slate-900/95 backdrop-blur-md shadow-2xl rounded-3xl p-4 md:p-6 z-[1000] text-white border border-white/10">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+      <div class="flex flex-wrap items-center justify-around md:justify-start gap-6 md:gap-10">
+        <div>
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Selected Date</p>
           <p class="text-sm font-bold text-pink-400">
-            {{ selectedSlots.length > 0 ? (selectedSlots[0].date | date:'MMMM d, y') : 'Choose a date' }}
+            {{ selectedSlots.length > 0 ? (selectedSlots[0].date | date:'MMM d, y') : 'Choose a date' }}
           </p>
         </div>
 
-        <div *ngIf="!isBlockMode" class="min-w-[140px]">
-          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Services</p>
-          <p class="text-sm font-bold text-white">{{ selectedServices.length }} selected</p>
-        </div>
-
-        <div *ngIf="!isBlockMode" class="min-w-[120px]">
-          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
+        <div *ngIf="!isBlockMode">
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Investment</p>
           <p class="text-sm font-bold text-white">${{ totalAmount }}</p>
         </div>
       </div>
 
-      <button
-        (click)="submitAction()"
-        [disabled]="selectedSlots.length === 0"
-        class="w-full md:w-auto
-               bg-white text-slate-900
-               px-6 md:px-12 py-3
-               rounded-2xl
-               font-bold uppercase text-[11px]
-               hover:bg-pink-50 transition-colors
-               disabled:opacity-20 disabled:cursor-not-allowed"
-      >
-        {{ isBlockMode ? 'Save Schedule' : 'Confirm Booking' }}
+      <button (click)="submitAction()"
+              [disabled]="selectedSlots.length === 0"
+              class="w-full md:w-auto bg-white text-slate-900 px-10 py-3.5 rounded-2xl font-bold uppercase text-[10px] tracking-widest active:scale-95 disabled:opacity-20 transition-all">
+        {{ isBlockMode ? 'Apply Schedule' : 'Request Booking' }}
       </button>
     </div>
   </div>

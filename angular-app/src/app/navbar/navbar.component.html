@@ -1,36 +1,76 @@
-<div class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-slate-900 shadow-sm border-b border-slate-100">
-  <div class="flex items-center gap-4">
-    <a routerLink="/">
-      <img ngSrc="/icon.png" width="34" height="34" alt="logo" class="hover:opacity-80 transition-opacity rounded-full"/>
-    </a>
-    <h3 class="font-beauty italic tracking-tight text-pink-200 text-xl">BeautyByNguyenHa</h3>
+<nav class="fixed top-0 left-0 right-0 z-[100] bg-slate-900 shadow-sm border-b border-slate-800">
+  <div class="flex items-center justify-between px-6 py-4">
+
+    <div class="flex items-center gap-4">
+      <button *ngIf="apiService.isLoggedIn()"
+              (click)="toggleSidebar()"
+              class="text-pink-200 outline-none p-2 active:bg-slate-800 rounded-lg hover:text-white transition-colors">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+      </button>
+
+      <a routerLink="/" class="px-4 flex items-center gap-3">
+        <img ngSrc="/icon.png" width="34" height="34" alt="logo" class="hover:opacity-80 transition-opacity rounded-full"/>
+        <h3 class="font-beauty italic font-bold tracking-tight text-xl md:text-3xl lg:text-5xl text-pink-200">
+          BeautyByNguyenHa
+        </h3>
+      </a>
+    </div>
+
+    <div class="hidden md:flex items-center gap-6">
+      <a *ngIf="apiService.isLoggedIn() && (userRole === 'STAFF' || userRole === 'ADMIN')"
+         routerLink="/staff-dashboard"
+         class="text-pink-100 text-sm font-medium hover:text-brand-gold transition-colors">
+        Staff Portal
+      </a>
+      <a *ngIf="apiService.isLoggedIn() && userRole === 'ADMIN'"
+         routerLink="/admin-dashboard"
+         class="text-pink-100 text-sm font-medium hover:text-brand-gold transition-colors">
+        Admin Panel
+      </a>
+
+      <div class="flex items-center gap-2">
+        <button *ngIf="apiService.isLoggedIn()"
+                (click)="handleLogout()"
+                class="w-[90px] py-1.5 rounded-full bg-slate-800 text-pink-200 font-black text-[10px] uppercase tracking-widest hover:bg-rose-100 hover:text-slate-900 transition-all border border-pink-900/30 shadow-sm active:scale-95 text-center flex items-center justify-center">
+          Log Out
+        </button>
+
+        <button *ngIf="!apiService.isLoggedIn() && !isAuthPage"
+                routerLink="/login"
+                class="w-[90px] py-1.5 rounded-full bg-pink-200 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:bg-brand-gold transition-all border border-pink-900/30 shadow-sm active:scale-95 text-center flex items-center justify-center">
+          Login
+        </button>
+      </div>
+    </div>
+
+    <div class="md:hidden flex items-center">
+      <button (click)="toggleLogoutMenu()" class="text-pink-200 p-2">
+        <svg *ngIf="!isLogoutMenuOpen" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+        </svg>
+        <svg *ngIf="isLogoutMenuOpen" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <div class="flex items-center gap-6">
-    <a *ngIf="apiService.isLoggedIn() && (userRole === 'STAFF' || userRole === 'ADMIN')"
-       routerLink="/staff-dashboard"
-       class="text-pink-100 text-sm font-medium hover:text-brand-gold transition-colors">
-      Staff Portal
-    </a>
+  <div *ngIf="isLogoutMenuOpen"
+       class="md:hidden bg-slate-800 border-t border-slate-700 px-6 py-4 flex flex-col items-center shadow-2xl animate-fade-in-down">
 
-    <a *ngIf="apiService.isLoggedIn() && userRole === 'ADMIN'"
-       routerLink="/admin-dashboard"
-       class="text-pink-100 text-sm font-medium hover:text-brand-gold transition-colors">
-      Admin Panel
-    </a>
-  </div>
-
-  <div class="flex items-center gap-4">
-    <button routerLink="/login"
-            [hidden]="apiService.isLoggedIn() || isAuthPage"
-            class="px-5 py-2 rounded-full bg-pink-200 text-slate-900 font-medium hover:bg-brand-gold transition-all border-rose-100">
-      Login
-    </button>
-
-    <button (click)="handleLogout()"
-            [hidden]="isAuthPage || !apiService.isLoggedIn()"
-            class="px-5 py-2 rounded-full bg-slate-800 text-pink-200 font-medium hover:bg-rose-100 hover:text-slate-900 transition-all border border-pink-900/30">
+    <button *ngIf="apiService.isLoggedIn()"
+            (click)="handleLogout()"
+            class="w-36 py-2 rounded-2xl bg-red-500/10 text-red-400 border border-red-500/20 font-black text-[15px] uppercase tracking-widest text-center active:scale-95 transition-all">
       Log Out
     </button>
+
+    <button *ngIf="!apiService.isLoggedIn() && !isAuthPage"
+            routerLink="/login" (click)="isLogoutMenuOpen = false"
+
+            class="w-36 py-2 rounded-2xl bg-pink-200 text-slate-900 font-black text-[15px] uppercase tracking-widest text-center active:scale-95 transition-all">
+      Login
+    </button>
   </div>
-</div>
+</nav>

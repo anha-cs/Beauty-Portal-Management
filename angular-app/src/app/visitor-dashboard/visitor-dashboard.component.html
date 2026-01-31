@@ -1,45 +1,44 @@
-  <div class="w-full bg-[#FAF7F2] p-8 md:p-16 pb-20 md:pb-32 flex flex-col md:flex-row items-center gap-12">
-    <div class="flex-1">
-      <h1 class="font-beauty italic text-4xl md:text-5xl text-slate-800 tracking-tight leading-tight">
-        Where Elegance Meets Expertise
-      </h1>
-      <p class="mt-6 text-lg text-slate-600 leading-relaxed font-light">
-        We don’t just apply makeup—we <span class="text-brand-gold font-medium">craft moments</span>.
-        From the first brushstroke to the final touch-up, our goal is to make you feel empowered,
-        serene, and stunning.
-      </p>
-      <div class="mt-8 pt-6 border-t border-brand-pink/60">
-        <ul class="grid grid-cols-2 gap-y-4 text-sm font-medium uppercase tracking-widest text-slate-500">
-          <li class="flex items-center gap-2"><span class="text-brand-gold">✦</span> Inclusive Expertise</li>
-          <li class="flex items-center gap-2"><span class="text-brand-gold">✦</span> 10+ Years Experience</li>
-          <li class="flex items-center gap-2"><span class="text-brand-gold">✦</span> Tailored Beauty</li>
-          <li class="flex items-center gap-2"><span class="text-brand-gold">✦</span> Groom Care</li>
-        </ul>
-      </div>
+<div class="w-full bg-[#FAF7F2] p-6 md:p-16 pt-12 md:pt-32 pb-20 md:pb-32 flex flex-col md:flex-row items-center gap-10 overflow-hidden">
+  <div class="flex-1 w-full text-center md:text-left">
+    <h1 class="font-beauty italic text-4xl md:text-6xl text-slate-800 tracking-tight leading-tight">
+      Where Elegance Meets Expertise
+    </h1>
+    <p class="mt-6 text-base md:text-lg text-slate-600 leading-relaxed font-light">
+      We don’t just apply makeup—we <span class="text-brand-gold font-medium">craft moments</span>.
+      From the first brushstroke to the final touch-up, our goal is to make you feel empowered.
+    </p>
+    <div class="mt-8 pt-6 border-t border-brand-pink/60">
+      <ul class="grid grid-cols-2 gap-y-4 text-[10px] md:text-sm font-medium uppercase tracking-widest text-slate-500">
+        <li class="flex items-center gap-2 justify-center md:justify-start"><span class="text-brand-gold">✦</span> Inclusive Expertise</li>
+        <li class="flex items-center gap-2 justify-center md:justify-start"><span class="text-brand-gold">✦</span> 10+ Years Experience</li>
+        <li class="flex items-center gap-2 justify-center md:justify-start"><span class="text-brand-gold">✦</span> Tailored Beauty</li>
+        <li class="flex items-center gap-2 justify-center md:justify-start"><span class="text-brand-gold">✦</span> Groom Care</li>
+      </ul>
     </div>
-    <div class="flex-none">
-      <img ngSrc="/visitor-dashboard.jpg" width="500" height="500" alt="About Ha"
-           class="rounded-full shadow-lg border-4 border-white"/>
-    </div>
+  </div>
+  <div class="flex-none flex justify-center w-full md:w-auto">
+    <img ngSrc="/visitor-dashboard.jpg" width="500" height="500" alt="About Ha"
+         class="rounded-full shadow-lg border-4 border-white w-64 h-64 md:w-[450px] md:h-[450px] object-cover"/>
+  </div>
 </div>
 
-<section class="bg-[#FAF7F2] py-24 px-4 border-y border-brand-pink/30">
+<section class="bg-[#FAF7F2] py-20 md:py-24 px-4 border-y border-brand-pink/30 overflow-hidden">
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-16">
       <p class="text-slate-400 uppercase tracking-[0.3em] text-[10px] mb-2 font-medium">What we do for you?</p>
       <h2 class="font-beauty italic text-5xl text-slate-800">Our Services</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-[1fr_1.5fr_1fr] gap-12 items-center">
-      <div class="space-y-12 text-center md:text-right text-slate-800">
+      <div class="order-2 md:order-1 space-y-12 text-center md:text-right text-slate-800">
         <div><h3 class="font-beauty italic text-2xl">Makeup</h3><p class="text-slate-500 text-sm">Helping you look your best.</p></div>
         <div><h3 class="font-beauty italic text-2xl">Touch-up</h3><p class="text-slate-500 text-sm">A quick refresh for your look.</p></div>
         <div><h3 class="font-beauty italic text-2xl">Eyeliner</h3><p class="text-slate-500 text-sm">Precision application.</p></div>
       </div>
-      <div class="relative group px-2 text-center">
+      <div class="order-1 md:order-2 px-2 text-center">
         <img ngSrc="/services-center.jpg" width="800" height="1100" [priority]="true" alt="Services Showcase"
-             class="relative rounded-2xl shadow-2xl object-cover w-full h-[650px] border-4 border-white grayscale-[20%] hover:grayscale-0 transition-all duration-500">
+             class="relative rounded-2xl shadow-2xl object-cover w-full max-w-[400px] md:max-w-none h-[450px] md:h-[650px] border-4 border-white grayscale-[20%] hover:grayscale-0 transition-all duration-500 mx-auto">
       </div>
-      <div class="space-y-12 text-center md:text-left text-slate-800">
+      <div class="order-3 space-y-12 text-center md:text-left text-slate-800">
         <div><h3 class="font-beauty italic text-2xl">Hair</h3><p class="text-slate-500 text-sm">Elegant styling.</p></div>
         <div><h3 class="font-beauty italic text-2xl">Brows</h3><p class="text-slate-500 text-sm">Professional shaping.</p></div>
         <div><h3 class="font-beauty italic text-2xl">Lashes</h3><p class="text-slate-500 text-sm">High-fidelity lifts.</p></div>
@@ -48,46 +47,41 @@
   </div>
 </section>
 
-<section class="py-24 bg-white">
-  <div class="max-w-6xl mx-auto px-8">
-    <div class="text-center mb-20">
+<section class="py-20 md:py-24 bg-white overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 md:px-8">
+    <div class="text-center mb-16">
       <h2 class="font-beauty italic text-5xl text-slate-800">Pricing</h2>
       <p class="text-slate-400 text-[10px] mt-4 uppercase tracking-[0.2em] max-w-lg mx-auto leading-relaxed">
-        All prices are subject to change without prior notice. First quotes will be confirmed at the time of booking.
-        Based on your budget, you can choose the lowest price $100/ service, it can go up to $125/ service or $150/ service
-        depend on what group of assistants needed, their skills, experience, products, etc.
+        Prices confirmed at booking. Ranges vary by artist experience and kit requirements.
       </p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
       <div *ngFor="let category of pricingData">
         <h4 class="font-medium text-slate-900 uppercase tracking-widest text-[11px] mb-8 border-b border-brand-pink pb-2">
           {{ category.title }}
         </h4>
         <div class="space-y-5">
-          <div *ngFor="let item of category.items" class="flex justify-between items-end">
-            <span class="text-slate-500 text-sm font-light">{{ item.name }}</span>
+          <div *ngFor="let item of category.items" class="flex justify-between items-end gap-2">
+            <span class="text-slate-500 text-sm font-light truncate">{{ item.name }}</span>
+            <div class="flex-1 border-b border-dotted border-slate-200 mb-1"></div>
             <span class="text-slate-800 font-medium text-sm">{{ item.price | currency }}</span>
           </div>
         </div>
       </div>
     </div>
-    <p class="text-slate-400 text-[10px] mt-4 uppercase tracking-[0.2em] max-w-lg mx-auto leading-relaxed">
-      A 50% deposit (bride's total price) with contract is required to reserve dates (NON-REFUNDABLE and NON-TRANSFERABLE).
-      Dates are not guaranteed or held without a contract AND deposit. We will send you the contract via your email once booked.
-    </p>
   </div>
 </section>
 
-<section class="py-24 bg-[#FAF7F2] border-y border-brand-pink/20">
-  <div class="max-w-3xl mx-auto px-8">
+<section class="py-20 md:py-24 bg-[#FAF7F2] border-y border-brand-pink/20 overflow-hidden">
+  <div class="max-w-3xl mx-auto px-6 md:px-8">
     <h2 class="font-beauty italic text-5xl text-slate-800 text-center mb-16">FAQs</h2>
     <div class="space-y-4">
-      <div *ngFor="let faq of faqs" class="border border-slate-200 rounded-lg overflow-hidden bg-brand-gold shadow-sm">
-        <button (click)="toggleFaq(faq)" class="w-full flex justify-between items-center p-6 text-left">
-          <span class="font-medium text-slate-700">{{faq.question}}</span>
-          <span class="text-brand-pink transition-transform duration-300" [class.rotate-180]="faq.isOpen">▼</span>
+      <div *ngFor="let faq of faqs" class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm">
+        <button (click)="toggleFaq(faq)" class="w-full flex justify-between items-center p-6 text-left hover:bg-slate-50 transition-colors">
+          <span class="font-medium text-slate-700 text-sm md:text-base">{{faq.question}}</span>
+          <span class="text-brand-gold transition-transform duration-300" [class.rotate-180]="faq.isOpen">▼</span>
         </button>
-        <div *ngIf="faq.isOpen" class="p-6 pt-0 text-slate-900 font-light text-sm leading-relaxed">
+        <div *ngIf="faq.isOpen" class="p-6 pt-0 text-slate-600 font-light text-sm leading-relaxed border-t border-slate-50">
           {{faq.answer}}
         </div>
       </div>
@@ -95,36 +89,23 @@
   </div>
 </section>
 
-<section class="py-24 bg-white">
-  <div class="max-w-6xl mx-auto px-8">
-    <h2 class="font-beauty italic text-4xl text-slate-800 text-center mb-16">What Customers have to say about our Artists</h2>
-
-    <div class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide">
-      <div *ngFor="let imgPath of reviewImages" class="snap-center shrink-0 w-[300px] md:w-[350px]">
-        <div class="relative aspect-[3/4] overflow-hidden rounded-2xl shadow-lg border-4 border-white bg-slate-100">
-          <img [ngSrc]="imgPath"
-               width="700"
-               height="800"
-               alt="Customer Result"
-               class="w-full h-full object-cover">
+<section class="py-20 md:py-24 bg-white overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 md:px-8">
+    <h2 class="font-beauty italic text-4xl text-slate-800 text-center mb-16">Customer Results</h2>
+    <div class="flex gap-4 md:gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide no-scrollbar">
+      <div *ngFor="let imgPath of reviewImages" class="snap-center shrink-0 w-[85%] md:w-[350px]">
+        <div class="relative aspect-[3/4] overflow-hidden rounded-2xl shadow-lg border-4 border-white bg-slate-50">
+          <img [ngSrc]="imgPath" width="700" height="800" alt="Customer Result" class="w-full h-full object-cover">
         </div>
       </div>
     </div>
-    <p class="text-center text-slate-400 text-[10px] uppercase tracking-widest mt-4">Swipe to see more pictures</p>
+    <p class="text-center text-slate-400 text-[10px] uppercase tracking-widest mt-4">Swipe to explore gallery</p>
   </div>
 </section>
 
 <div class="flex items-center justify-center gap-4 py-8 bg-white">
   <div class="h-[1px] w-12 bg-brand-pink/30"></div>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="w-6 h-6 text-brand-gold">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-brand-gold">
     <path d="M12 7.5a4.5 4.5 0 1 1 4.5 4.5M12 7.5A4.5 4.5 0 1 0 7.5 12M12 7.5V12m4.5 0a4.5 4.5 0 1 1-4.5 4.5M16.5 12H12m-4.5 0A4.5 4.5 0 1 0 12 16.5M7.5 12H12m0 0v4.5" />
     <circle cx="12" cy="12" r="1" fill="currentColor"/>
   </svg>

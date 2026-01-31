@@ -1,240 +1,159 @@
-<main class="min-h-screen bg-[#FAF7F2] py-10 md:py-14 px-4 md:px-8">
-  <div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto">
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="flex flex-col justify-center items-center py-24">
-      <div class="relative">
-        <div class="animate-spin rounded-full h-12 w-12 border-[3px] border-slate-200 border-b-pink-500"></div>
-        <div class="absolute inset-0 rounded-full blur-lg opacity-20 bg-pink-400"></div>
-      </div>
-      <p class="text-slate-400 text-[10px] mt-5 uppercase tracking-[0.25em] font-black">
-        Loading Records...
-      </p>
+  <div *ngIf="isLoading" class="flex flex-col justify-center items-center py-24">
+    <div class="relative">
+      <div class="animate-spin rounded-full h-12 w-12 border-[3px] border-slate-200 border-b-pink-500"></div>
     </div>
-
-    <!-- Error -->
-    <div *ngIf="errorMessage" class="mb-8">
-      <div class="p-4 md:p-5 bg-red-50 border border-red-100 rounded-2xl text-red-700 shadow-sm">
-        <p class="text-sm font-bold">Something went wrong</p>
-        <p class="text-xs mt-1 italic opacity-90">{{ errorMessage }}</p>
-      </div>
-    </div>
-
-    <!-- Admin/Staff View -->
-    <section *ngIf="!isLoading && (isAdmin || isStaff)" class="fade-in">
-
-      <!-- Header -->
-      <div class="mb-8 md:mb-10">
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <h1 class="text-3xl md:text-4xl font-serif italic text-slate-900">
-              Client Directory
-            </h1>
-            <p class="text-[10px] uppercase tracking-[0.22em] text-amber-700 font-black mt-2">
-              Authorized Management Only
-            </p>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-100 shadow-sm">
-              <span class="text-pink-500">✦</span>
-              <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                {{ isAdmin ? 'Admin' : 'Staff' }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Subtle accent banner -->
-        <div class="mt-6 bg-white border border-slate-100 rounded-[2rem] p-5 md:p-6 shadow-sm relative overflow-hidden">
-          <div class="absolute -right-20 -top-20 w-56 h-56 rounded-full bg-pink-200/40 blur-3xl"></div>
-          <div class="absolute -left-24 -bottom-24 w-64 h-64 rounded-full bg-amber-200/30 blur-3xl"></div>
-
-          <div class="relative">
-            <p class="text-sm text-slate-700 font-semibold">
-              Manage client details and shared care notes.
-            </p>
-            <p class="text-xs text-slate-500 mt-1">
-              Notes are visible to staff/admin and shown to the client in their profile.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Table shell -->
-      <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-
-        <!-- Mobile hint -->
-        <div class="md:hidden px-5 py-3 border-b border-slate-100 bg-slate-50/60">
-          <p class="text-[10px] uppercase tracking-widest font-black text-slate-400">
-            Swipe to view all columns →
-          </p>
-        </div>
-
-        <!-- Horizontal scroll wrapper (keeps table usable on small screens) -->
-        <div class="w-full overflow-x-auto">
-          <table class="min-w-[980px] w-full text-left">
-
-            <!-- Sticky head -->
-            <thead class="bg-slate-50 border-b border-slate-100 sticky top-0 z-10">
-            <tr>
-              <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">
-                Client
-              </th>
-              <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">
-                Email
-              </th>
-              <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">
-                Phone
-              </th>
-              <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">
-                Care & Artist Notes (Shared)
-              </th>
-              <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700 text-right">
-                Actions
-              </th>
-            </tr>
-            </thead>
-
-            <tbody class="divide-y divide-slate-100">
-            <tr *ngFor="let c of customers" class="hover:bg-slate-50/70 transition-colors">
-              <!-- Name -->
-              <td class="px-6 py-5">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-2xl bg-pink-50 border border-pink-100 flex items-center justify-center font-black text-pink-600">
-                    {{ (c.firstName || 'C') | slice:0:1 }}
-                  </div>
-                  <div>
-                    <p class="font-bold text-slate-600 leading-tight">
-                      {{ c.firstName }} {{ c.lastName }}
-                    </p>
-                  </div>
-                </div>
-              </td>
-
-              <!-- Email -->
-              <td class="px-6 py-5">
-                <p class="text-sm text-slate-700 font-semibold">{{ c.email }}</p>
-                <p class="text-[10px] text-slate-400 mt-1">Primary contact</p>
-              </td>
-
-              <!-- Phone -->
-              <td class="px-6 py-5">
-                <p class="text-sm text-slate-700 font-semibold">{{ c.phone }}</p>
-                <p class="text-[10px] text-slate-400 mt-1">Mobile</p>
-              </td>
-
-              <!-- Notes -->
-              <td class="px-6 py-5">
-                <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                  <p class="text-sm text-slate-700 leading-relaxed italic font-serif line-clamp-4">
-                    {{ c.notes || 'No care instructions recorded for this client.' }}
-                  </p>
-                </div>
-              </td>
-
-              <!-- Actions -->
-              <td class="px-6 py-5 text-right">
-                <button
-                  (click)="updateNotes(c)"
-                  class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-pink-100 bg-white text-pink-600
-                           text-[10px] font-black uppercase tracking-widest hover:bg-pink-50 hover:border-pink-200 transition active:scale-[0.98]">
-                  <span class="text-pink-500">✎</span>
-                  Update Notes
-                </button>
-              </td>
-            </tr>
-            </tbody>
-
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Customer (My Profile) View -->
-    <section *ngIf="!isLoading && !isAdmin && !isStaff && myProfile" class="max-w-2xl mx-auto fade-in">
-      <div class="bg-white rounded-[2.5rem] p-10 shadow-xl shadow-slate-200/50 border border-pink-50 relative overflow-hidden">
-
-        <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-pink-200/30 blur-3xl"></div>
-        <div class="absolute -left-24 -bottom-24 w-64 h-64 rounded-full bg-amber-200/25 blur-3xl"></div>
-
-        <div class="absolute top-0 right-0 p-8 opacity-10">
-          <span class="text-6xl italic font-serif text-pink-500">B</span>
-        </div>
-
-        <header class="mb-10 relative">
-          <h1 class="text-4xl font-serif italic text-slate-900">Hello, {{ myProfile.firstName }}</h1>
-          <p class="text-[10px] uppercase tracking-[0.3em] text-amber-700 font-black mt-2">
-            Your Personal Information
-          </p>
-        </header>
-
-        <div class="space-y-8 relative">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
-              <label class="text-[9px] uppercase font-black text-slate-400 block mb-2 tracking-widest">Email Account</label>
-              <p class="text-slate-800 font-semibold">{{ myProfile.email }}</p>
-            </div>
-
-            <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
-              <label class="text-[9px] uppercase font-black text-slate-400 block mb-2 tracking-widest">Contact Number</label>
-              <p class="text-slate-800 font-semibold">{{ myProfile.phone }}</p>
-            </div>
-          </div>
-
-          <div class="mt-6 p-8 bg-pink-50/40 rounded-[2rem] border border-pink-100 relative">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-pink-500">✦</span>
-              <h3 class="text-[11px] uppercase font-black text-slate-700 tracking-widest">Artist Care Instructions</h3>
-            </div>
-            <p class="text-sm text-slate-700 leading-relaxed italic font-serif">
-              "{{ myProfile.notes || 'Your artist will record post-session care and specific product recommendations here.' }}"
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Notes Modal -->
-    <div *ngIf="showNoteModal"
-         (click)="closeModal()"
-         class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-
-      <div (click)="$event.stopPropagation()"
-           class="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl border border-pink-50 fade-in-up relative overflow-hidden">
-
-        <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-pink-200/30 blur-3xl"></div>
-
-        <div class="relative">
-          <div class="mb-6">
-            <h2 class="text-2xl font-serif italic text-slate-900">Edit Care Notes</h2>
-            <p class="text-[9px] uppercase tracking-widest text-amber-700 font-black mt-1">
-              Updating: {{ selectedCustomer?.firstName }} {{ selectedCustomer?.lastName }}
-            </p>
-          </div>
-
-          <textarea [(ngModel)]="tempNote"
-                    class="w-full h-56 p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100
-                           focus:ring-2 focus:ring-pink-200 text-sm italic text-slate-700 leading-relaxed
-                           outline-none transition-all"
-                    placeholder="Enter specific care instructions or product recommendations...">
-          </textarea>
-
-          <div class="flex justify-end items-center gap-4 mt-8">
-            <button (click)="closeModal()"
-                    class="px-5 py-3 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 hover:border-slate-300 transition">
-              Discard
-            </button>
-
-            <button (click)="confirmNoteUpdate()"
-                    class="px-7 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest
-                           hover:bg-pink-600 transition-all shadow-lg active:scale-95">
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <p class="text-slate-400 text-[10px] mt-5 uppercase tracking-[0.25em] font-black">Loading Records...</p>
   </div>
-</main>
+
+  <section *ngIf="!isLoading && (isAdmin || isStaff)" class="fade-in">
+    <div class="mb-8 md:mb-10">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <h1 class="px-8 text-3xl md:text-5xl font-serif italic text-slate-900 leading-tight">Client Directory</h1>
+          <p class="px-8 text-[10px] uppercase tracking-[0.22em] text-amber-700 font-black mt-2">Authorized Management Only</p>
+        </div>
+        <div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-100 shadow-sm">
+          <span class="text-pink-500">✦</span>
+          <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">{{ isAdmin ? 'Admin' : 'Staff' }}</span>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-56 h-56 rounded-full bg-pink-200/40 blur-3xl"></div>
+        <div class="relative">
+          <p class="text-sm text-slate-700 font-semibold">Manage client details and shared care notes.</p>
+          <p class="text-xs text-slate-500 mt-1">Notes are visible to staff and shown to the client in their profile.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:hidden">
+      <div *ngFor="let c of customers" class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-pink-50 border border-pink-100 flex items-center justify-center font-black text-pink-600 text-lg">
+            {{ (c.firstName || 'C') | slice:0:1 }}
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-slate-800 text-lg">{{ c.firstName }} {{ c.lastName }}</p>
+            <p class="text-xs text-slate-500 lowercase">{{ c.email }}</p>
+          </div>
+        </div>
+        <div class="space-y-3 mb-5 px-1">
+          <div class="flex justify-between items-center">
+            <span class="text-[9px] uppercase font-black text-slate-400 tracking-widest">Phone</span>
+            <span class="text-sm font-semibold text-slate-700">{{ c.phone || 'N/A' }}</span>
+          </div>
+          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+            <p class="text-[10px] uppercase font-black text-amber-700 mb-1">Artist Notes</p>
+            <p class="text-xs text-slate-600 italic leading-relaxed line-clamp-3">{{ c.notes || 'No care instructions recorded.' }}</p>
+          </div>
+        </div>
+        <button (click)="updateNotes(c)" class="w-full py-3 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest">Update Care Notes</button>
+      </div>
+    </div>
+
+    <div class="hidden md:block bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+      <table class="w-full text-left">
+        <thead class="bg-slate-50 border-b border-slate-100">
+        <tr>
+          <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">Client</th>
+          <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">Contact Details</th>
+          <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700">Care Notes</th>
+          <th class="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-amber-700 text-right">Actions</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+        <tr *ngFor="let c of customers" class="hover:bg-slate-50/70 transition-colors">
+          <td class="px-6 py-5 font-bold text-slate-600">{{ c.firstName }} {{ c.lastName }}</td>
+          <td class="px-6 py-5">
+            <p class="text-sm text-slate-700 font-semibold lowercase">{{ c.email }}</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-1">{{ c.phone || 'No Phone' }}</p>
+          </td>
+          <td class="px-6 py-5 max-w-xs text-xs text-slate-600 italic line-clamp-2">{{ c.notes || 'No instructions.' }}</td>
+          <td class="px-6 py-5 text-right">
+            <button (click)="updateNotes(c)" class="px-4 py-2 rounded-full border border-pink-100 text-[10px] font-black uppercase text-pink-600 hover:bg-pink-50">Update</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section *ngIf="!isLoading && !isAdmin && !isStaff && myProfile" class="max-w-2xl mx-auto fade-in">
+    <div class="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-slate-200/50 border border-white relative overflow-hidden">
+
+      <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-pink-200/30 blur-3xl"></div>
+      <div class="absolute -left-24 -bottom-24 w-64 h-64 rounded-full bg-amber-200/25 blur-3xl"></div>
+
+      <header class="mb-10 relative">
+        <h1 class="text-4xl md:text-5xl font-serif italic text-slate-900">Hello, {{ myProfile.firstName }}</h1>
+        <p class="text-[10px] uppercase tracking-[0.3em] text-amber-700 font-black mt-2">Your Personal Information</p>
+      </header>
+
+      <div class="space-y-6 relative">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+            <label class="text-[9px] uppercase font-black text-slate-400 block mb-1 tracking-widest">Email Address</label>
+            <p class="text-slate-800 font-semibold lowercase">{{ myProfile.email }}</p>
+          </div>
+          <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-5">
+            <label class="text-[9px] uppercase font-black text-slate-400 block mb-1 tracking-widest">Phone Number</label>
+            <p class="text-slate-800 font-semibold">{{ myProfile.phone || 'N/A' }}</p>
+          </div>
+        </div>
+
+        <div class="p-8 bg-pink-50/40 rounded-[2rem] border border-pink-100 relative">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-pink-500">✦</span>
+            <h3 class="text-[11px] uppercase font-black text-slate-700 tracking-widest">Artist Care Instructions</h3>
+          </div>
+          <p class="text-sm text-slate-700 leading-relaxed italic font-serif">
+            "{{ myProfile.notes || 'Your artist will record post-session care and specific product recommendations here.' }}"
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div *ngIf="showNoteModal"
+     (click)="closeModal()"
+     class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[3000] p-6">
+
+  <div (click)="$event.stopPropagation()"
+       class="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl border border-pink-50 relative overflow-hidden animate-in zoom-in-95 duration-200">
+
+    <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-pink-200/30 blur-3xl"></div>
+
+    <div class="relative">
+      <div class="mb-6">
+        <h2 class="text-2xl font-serif italic text-slate-900">Edit Care Notes</h2>
+        <p class="text-[9px] uppercase tracking-widest text-amber-700 font-black mt-1">
+          Updating: {{ selectedCustomer?.firstName }} {{ selectedCustomer?.lastName }}
+        </p>
+      </div>
+
+      <textarea [(ngModel)]="tempNote"
+                class="w-full h-56 p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100
+                         focus:ring-2 focus:ring-pink-200 text-sm italic text-slate-700 leading-relaxed
+                         outline-none transition-all resize-none"
+                placeholder="Enter specific care instructions or product recommendations...">
+        </textarea>
+
+      <div class="flex justify-end items-center gap-4 mt-8">
+        <button (click)="closeModal()"
+                class="px-5 py-3 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 transition">
+          Discard
+        </button>
+
+        <button (click)="confirmNoteUpdate()"
+                class="px-7 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest
+                         hover:bg-pink-600 transition-all shadow-lg active:scale-95">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
