@@ -27,14 +27,14 @@ export class VisitorDashboardComponent {
     { title: 'Bridal - including airbrush and false lashes', items: [{ name: 'Makeup + Hair', price: 600 }, { name: 'Makeup', price: 300 }, { name: 'Hair', price: 300 }] },
     { title: 'Trial', items: [{ name: 'Makeup + Hair', price: 300 }, { name: 'Makeup', price: 150 }, { name: 'Hair', price: 150 }] },
     { title: 'Bridemaids, mom - including false lashes', items: [{ name: 'Makeup + Hair', price: 250 }, { name: 'Makeup', price: 150 }, { name: 'Hair', price: 150 }] },
-    { title: 'Fees', items: [{ name: 'Travel fee - round trip (per mile)', price: 2 }, { name: 'Early fee - start before salon hour (per hour)', price: 50 }] }
+    { title: 'Fees', items: [{ name: 'Travel fee - round trip (per mile)', price: 2 }, { name: 'Early fee - start before salon hour (per hr)', price: 50 }] }
   ];
 
   faqs = [
     {
       question: 'How can I book an appointment?',
       answer: 'Please create an account to book, it is just a simple step and will not take long, but provide us some necessary information.',
-      isOpen: true
+      isOpen: false
     },
     {
       question: 'How far in advance should I book?',

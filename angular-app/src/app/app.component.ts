@@ -12,7 +12,7 @@ import { SideNavbarComponent } from './navbar/side-navbar/side-navbar.component'
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  isSideNavOpen = true;
+  isSideNavOpen: boolean = false;
 
   toggleSidebar() {
     this.isSideNavOpen = !this.isSideNavOpen;
