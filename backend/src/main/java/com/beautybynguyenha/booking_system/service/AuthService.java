@@ -63,4 +63,33 @@ public class AuthService {
         mailSender.send(message);
         logger.info("Reset email successfully sent to: {}", email);
     }
+
+    public void sendBookingSms(com.beautybynguyenha.booking_system.entity.Appointment appt) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo("6692969115@tmomail.net"); // Your T-Mobile SMS Gateway
+            message.setSubject("New Booking: " + appt.getCustomerName());
+
+            String body = String.format(
+                    "New Appointment!\n" +
+                            "Client: %s\n" +
+                            "Service: %s\n" +
+                            "Date/Time: %s\n" +
+                            "Price: $%s\n" +
+                            "Notes: %s",
+                    appt.getCustomerName(),
+                    appt.getServiceName(),
+                    appt.getDateTime(),
+                    appt.getPrice(),
+                    (appt.getNotes() != null ? appt.getNotes() : "N/A")
+            );
+
+            message.setText(body);
+            mailSender.send(message);
+            logger.info("Booking SMS sent to staff for appointment: {}", appt.getId());
+        } catch (Exception e) {
+            logger.error("Failed to send booking SMS: {}", e.getMessage());
+        }
+    }
 }

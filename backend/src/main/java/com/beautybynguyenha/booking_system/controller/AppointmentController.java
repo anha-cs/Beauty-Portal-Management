@@ -3,6 +3,7 @@ package com.beautybynguyenha.booking_system.controller;
 import com.beautybynguyenha.booking_system.entity.Appointment;
 import com.beautybynguyenha.booking_system.repository.AppointmentRepository;
 import com.beautybynguyenha.booking_system.repository.UserRepository;
+import com.beautybynguyenha.booking_system.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,10 @@ public class AppointmentController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthService authService;
+
 
     // ------------------------------------------------------
     // BLOCKS (calendar availability)
@@ -246,6 +251,7 @@ public class AppointmentController {
             }
 
             Appointment saved = appointmentRepository.save(appointment);
+            authService.sendBookingSms(saved);
             return ResponseEntity.ok(saved);
 
         } catch (Exception e) {
