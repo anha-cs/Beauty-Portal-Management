@@ -12,8 +12,9 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    // Must be at least 64 characters long for HS512
-    private final String jwtSecret = "yourSecureKeyForEncryptionMakeItVeryLongAndSecure12345678901234567890123456789012";
+    private final String jwtSecret = System.getenv("JWT_SECRET") != null 
+            ? System.getenv("JWT_SECRET") 
+            : "yourSecureKeyForEncryptionMakeItVeryLongAndSecure12345678901234567890123456789012";
     private final int jwtExpirationMs = 600000; // 10 minutes
 
     private SecretKey getSigningKey() {
