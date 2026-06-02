@@ -2,12 +2,13 @@ package com.beautybynguyenha.booking_system.service;
 
 import com.beautybynguyenha.booking_system.entity.User;
 import com.beautybynguyenha.booking_system.repository.UserRepository;
+import com.resend.Resend;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,14 +22,11 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String fromEmail;
-
     @Value("${app.frontend.url}")
     private String frontendUrl;
+
+    // Pulls your API key securely from your system environment variables
+    private final String resendApiKey = System.getenv("RESEND_API_KEY");
 
     public void processForgotPassword(String email) {
         // 1. Check if user exists
@@ -51,45 +49,37 @@ public class AuthService {
     }
 
     private void sendResetEmail(String email, String token) {
+        if (resendApiKey == null || resendApiKey.isEmpty()) {
+            logger.error("Failed to send email: RESEND_API_KEY environment variable is not set.");
+            return;
+        }
+
         String resetLink = frontendUrl + "/reset-password?token=" + token;
+        Resend resend = new Resend(resendApiKey);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(email);
-        message.setSubject("Password Reset Request - BeautyByNguyenHa");
-        message.setText("Hello,\n\nYou requested to reset your password. Click the link below. " +
-                "Note that this link expires in 10 minutes:\n\n" + resetLink);
+        String htmlContent = "<h3>Password Reset Request</h3>" +
+                "<p>Hello,</p>" +
+                "<p>You requested to reset your password for your Beauty Portal account. Click the link below to set a new password.</p>" +
+                "<p><strong>Note that this link expires in 10 minutes:</strong></p>" +
+                "<p><a href='" + resetLink + "' style='padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;'>Reset Password</a></p>" +
+                "<p>If you did not request this, please ignore this email.</p>";
 
-        mailSender.send(message);
-        logger.info("Reset email successfully sent to: {}", email);
-    }
+        CreateEmailOptions sendEmailRequest = CreateEmailOptions.builder()
+                .from("onboarding@resend.dev") // Replace with your verified custom domain once added to Resend
+                .to(email)
+                .subject("Password Reset Request - BeautyByNguyenHa")
+                .html(htmlContent)
+                .build();
 
-    public void sendBookingSms(com.beautybynguyenha.booking_system.entity.Appointment appt) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo("6692969115@tmomail.net"); // Your T-Mobile SMS Gateway
-            message.setSubject("New Booking: " + appt.getCustomerName());
-
-            String body = String.format(
-                    "New Appointment!\n" +
-                            "Client: %s\n" +
-                            "Service: %s\n" +
-                            "Date/Time: %s\n" +
-                            "Price: $%s\n" +
-                            "Notes: %s",
-                    appt.getCustomerName(),
-                    appt.getServiceName(),
-                    appt.getDateTime(),
-                    appt.getPrice(),
-                    (appt.getNotes() != null ? appt.getNotes() : "N/A")
-            );
-
-            message.setText(body);
-            mailSender.send(message);
-            logger.info("Booking SMS sent to staff for appointment: {}", appt.getId());
+            CreateEmailResponse response = resend.emails().send(sendEmailRequest);
+            if (response != null && response.getId() != null) {
+                logger.info("Reset email successfully sent via Resend to: {}", email);
+            } else {
+                logger.error("Failed to confirm email delivery via Resend API response.");
+            }
         } catch (Exception e) {
-            logger.error("Failed to send booking SMS: {}", e.getMessage());
+            logger.error("Exception caught while dispatching reset email via Resend: {}", e.getMessage());
         }
     }
 }

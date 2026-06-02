@@ -6,7 +6,7 @@ import { NgOptimizedImage, NgIf, AsyncPipe } from '@angular/common';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, NgOptimizedImage, NgIf, AsyncPipe],
+  imports: [RouterLink, NgOptimizedImage, NgIf],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })

@@ -2,19 +2,21 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ApiService } from '../../service/api.service';
 import { Router, RouterLink } from "@angular/router";
-import { NgIf } from "@angular/common";
+import { NgIf, NgClass } from "@angular/common";
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, RouterLink],
+  imports: [ReactiveFormsModule, NgIf, NgClass, RouterLink], // Added NgClass here
   templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.css'
 })
 export class LoginPageComponent {
   public form: FormGroup;
   public invalidCredentials = false;
   public isLoading = false;
+  
+  // 👁️ Properties to handle the password visibility eye toggle feature
+  public showPasswordValue: boolean = false;
 
   constructor(private apiService: ApiService, private router: Router, private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -23,8 +25,16 @@ export class LoginPageComponent {
     });
   }
 
+  // 👁️ Method to alternate password view state
+  public togglePasswordVisibility(): void {
+    this.showPasswordValue = !this.showPasswordValue;
+  }
+
   public onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.isLoading = true;
     this.invalidCredentials = false;

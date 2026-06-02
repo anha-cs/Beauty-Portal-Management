@@ -13,7 +13,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatExpansionModule
   ],
   templateUrl: './staff-information.component.html',
-  styleUrls: ['./staff-information.component.css']
 })
 export class StaffInformationComponent implements OnInit {
   staffs: any[] = [];

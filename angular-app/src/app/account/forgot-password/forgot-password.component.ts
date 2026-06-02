@@ -12,7 +12,6 @@ import { ApiService } from '../../service/api.service';
     CommonModule
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrls: ['./forgot-password.component.css']
 })
 export class ForgotPasswordComponent {
   email: string = '';

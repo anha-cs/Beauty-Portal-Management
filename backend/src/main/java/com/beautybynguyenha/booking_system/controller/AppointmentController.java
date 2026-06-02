@@ -3,7 +3,7 @@ package com.beautybynguyenha.booking_system.controller;
 import com.beautybynguyenha.booking_system.entity.Appointment;
 import com.beautybynguyenha.booking_system.repository.AppointmentRepository;
 import com.beautybynguyenha.booking_system.repository.UserRepository;
-import com.beautybynguyenha.booking_system.service.AuthService;
+import com.beautybynguyenha.booking_system.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +25,7 @@ public class AppointmentController {
     private UserRepository userRepository;
 
     @Autowired
-    private AuthService authService;
-
+    private EmailService emailService;
 
     // ------------------------------------------------------
     // BLOCKS (calendar availability)
@@ -176,10 +175,7 @@ public class AppointmentController {
                 }
             }
 
-            // ------------------------------------------------------
-            // Validate staffId for BOTH blocks and normal appointments
-            // and set canonical staffId + staffName
-            // ------------------------------------------------------
+            // Validate staffId
             if (appointment.getStaffId() == null || appointment.getStaffId().isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "staffId is required"));
             }
@@ -190,19 +186,17 @@ public class AppointmentController {
             }
 
             var staffUser = staffOpt.get();
-
             appointment.setStaffId(String.valueOf(staffUser.getId()));
 
             if (appointment.getStaffName() == null || appointment.getStaffName().isBlank()) {
                 appointment.setStaffName(staffUser.getFirstName());
             }
 
-            // BLOCK
+            // BLOCK LOGIC
             if (isBlock) {
                 appointment.setIsBlock(true);
                 appointment.setStatus("BLOCKED");
 
-                // for blocks, customer info isn't important
                 if (appointment.getServiceName() == null) appointment.setServiceName("Unavailable");
                 if (appointment.getCustomerName() == null) appointment.setCustomerName("N/A (Staff Block)");
 
@@ -210,14 +204,12 @@ public class AppointmentController {
                 return ResponseEntity.ok(saved);
             }
 
-            // NORMAL APPOINTMENT
+            // NORMAL APPOINTMENT LOGIC
             appointment.setIsBlock(false);
             appointment.setStatus("PENDING");
 
             // CustomerId normalization
-            // Inside the "if (!isAdmin)" block
             if (!isAdmin) {
-                // customer booking themselves
                 appointment.setCustomerId(String.valueOf(bookingUser.getId()));
                 appointment.setCustomerEmail(bookingUser.getEmail());
                 appointment.setCustomerPhone(bookingUser.getPhone());
@@ -228,7 +220,6 @@ public class AppointmentController {
                 }
                 appointment.setCustomerName(dbName);
             } else {
-                // admin booking for customer: must pass customerId as USER _id string
                 if (appointment.getCustomerId() == null || appointment.getCustomerId().isBlank()) {
                     return ResponseEntity.badRequest().body(Map.of("error", "customerId is required for admin booking"));
                 }
@@ -251,7 +242,10 @@ public class AppointmentController {
             }
 
             Appointment saved = appointmentRepository.save(appointment);
-            authService.sendBookingSms(saved);
+            
+            // Fires beautiful HTML email confirmation to admin and client via Resend
+            emailService.sendBookingConfirmation(saved.getCustomerEmail(), saved);
+            
             return ResponseEntity.ok(saved);
 
         } catch (Exception e) {
@@ -262,7 +256,7 @@ public class AppointmentController {
     }
 
     // ------------------------------------------------------
-    // DELETE: used for UNBLOCK only
+    // DELETE: used for UNBLOCK (calendar cleanup only)
     // ------------------------------------------------------
 
     @DeleteMapping("/{id}")
@@ -290,22 +284,20 @@ public class AppointmentController {
 
             Appointment appt = apptOpt.get();
             boolean blocked = Boolean.TRUE.equals(appt.getIsBlock()) || "BLOCKED".equals(appt.getStatus());
-            if (!blocked) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Only blocked items can be removed here"));
-            }
 
-            if (isAdmin) {
-                appointmentRepository.deleteById(id);
-                return ResponseEntity.ok(Map.of("message", "Unblocked"));
-            }
-
-            if (isStaff) {
-                String myStaffId = String.valueOf(user.getId());
-                if (myStaffId.equals(String.valueOf(appt.getStaffId()))) {
+            if (blocked) {
+                if (isAdmin) {
                     appointmentRepository.deleteById(id);
                     return ResponseEntity.ok(Map.of("message", "Unblocked"));
                 }
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Cannot unblock other staff schedule"));
+                if (isStaff) {
+                    String myStaffId = String.valueOf(user.getId());
+                    if (myStaffId.equals(String.valueOf(appt.getStaffId()))) {
+                        appointmentRepository.deleteById(id);
+                        return ResponseEntity.ok(Map.of("message", "Unblocked"));
+                    }
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Cannot unblock other staff schedule"));
+                }
             }
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Forbidden"));
@@ -334,6 +326,11 @@ public class AppointmentController {
 
                     appointment.setStatus(newStatus);
                     appointmentRepository.save(appointment);
+
+                    // Trigger notification ONLY if the status turns into CANCELLED
+                    if ("CANCELLED".equalsIgnoreCase(newStatus)) {
+                        emailService.sendCancellationConfirmation(appointment.getCustomerEmail(), appointment);
+                    }
 
                     return ResponseEntity.ok(Map.of(
                             "message", "Status updated successfully",

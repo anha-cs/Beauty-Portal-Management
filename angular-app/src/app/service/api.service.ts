@@ -70,16 +70,11 @@ export class ApiService {
     }
   }
 
-  /**
-   * Builds the full URL dynamically based on the environment.
-   */
   private buildUrl(url: string): string {
     if (url.startsWith('http')) return url;
-
     if (url.startsWith('/api')) {
       return `${environment.apiUrl}${url}`;
     }
-
     const cleanPath = url.startsWith('/') ? url : `/${url}`;
     return `${this.baseUrl}${cleanPath}`;
   }
@@ -92,11 +87,9 @@ export class ApiService {
 
   post<T>(url: string, body: any, options: any = {}): Observable<T> {
     let headers = this.getHeaders();
-
     if (options.responseType === 'text') {
       headers = headers.delete('Content-Type');
     }
-
     return this.http.post(this.buildUrl(url), body, {
       headers: headers,
       ...options
@@ -124,8 +117,14 @@ export class ApiService {
     this.toggleLogin();
   }
 
+  // Unified logout method for both manual and inactivity-driven sessions
   logout() {
     localStorage.clear();
     this.toggleLogin();
+  }
+
+  // Alias for InactivityMonitorService to consume
+  public clearLoginData(): void {
+    this.logout();
   }
 }

@@ -85,7 +85,7 @@ export class AppointmentRecordsComponent implements OnInit {
   /**
    * ✅ Admin can manage any PENDING appointment
    * ✅ Staff can manage only their own PENDING appointment
-   * ❌ Customers cannot manage
+   * ✅ Customers can manage their own PENDING records (backend filters visibility)
    * ❌ Blocks never manageable here
    */
   canManage(appt: any): boolean {
@@ -98,14 +98,19 @@ export class AppointmentRecordsComponent implements OnInit {
     const status = String(appt?.status || '').toUpperCase();
     if (status !== 'PENDING') return false;
 
+    // 1. Admin Override
     if (this.isAdmin) return true;
 
-    if (this.isStaff && !this.isAdmin) {
+    // 2. Staff Authorization Verification
+    if (this.isStaff) {
       const staffId = String(appt?.staffId?._id || appt?.staffId || '');
       return staffId === this.myUserId;
     }
 
-    return false;
+    // 3. Customer Fallback
+    // If not Admin and not Staff, they are a Customer.
+    // The /records backend endpoint securely ensures they only see their own appointments.
+    return true;
   }
 
   updateStatus(apptId: any, newStatus: string) {

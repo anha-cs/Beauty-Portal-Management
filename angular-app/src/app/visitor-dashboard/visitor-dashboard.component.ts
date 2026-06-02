@@ -9,7 +9,6 @@ export interface PricingCategory { title: string; items: ServiceItem[]; }
   standalone: true,
   imports: [CommonModule, NgOptimizedImage],
   templateUrl: './visitor-dashboard.component.html',
-  styleUrl: './visitor-dashboard.component.css'
 })
 export class VisitorDashboardComponent {
 
