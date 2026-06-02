@@ -1,5 +1,5 @@
-# Stage 1: Build the application using a standard OpenJDK image
-FROM eclipse-temurin:17-jdk-alpine AS build
+# Stage 1: Build the application using JDK 21
+FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
 COPY . .
 
@@ -10,8 +10,8 @@ RUN chmod +x ./backend/mvnw
 # Run the build directly using the script from inside the backend directory
 RUN cd backend && ./mvnw clean package -DskipTests
 
-# Stage 2: Run the application
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Run the application using JRE 21
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/backend/target/*.jar app.jar
 EXPOSE 8080
