@@ -141,4 +141,195 @@ export class NewAppointmentComponent implements OnInit {
           StaffId: String(a.staffId?._id || a.staffId)
         }));
         this.eventSettings = { dataSource: mapped };
-        this.cdr.detectChanges
+        this.cdr.detectChanges();
+        this.scheduleObj?.refresh();
+      }
+    });
+  }
+
+  onCellClick(args: CellClickEventArgs): void {
+    args.cancel = true;
+    if (!args.startTime) return;
+    const cellStaffId = this.getCellStaffId(args.groupIndex);
+    const data = (this.eventSettings.dataSource as any[]) || [];
+    const existingBlock = data.find(e => new Date(e.StartTime).toDateString() === args.startTime!.toDateString() && e.IsBlock === true && String(e.StaffId) === String(cellStaffId));
+
+    if (existingBlock) {
+      if (confirm('Make this day available?')) {
+        this.apiService.delete(`/appointments/${existingBlock.Id}`).subscribe({
+          next: () => { this.triggerToast('Availability Restored'); this.loadBlockedDays(); }
+        });
+      }
+      return;
+    }
+
+    this.selectedSlots = [{ id: new Date().getTime(), date: args.startTime, staffId: cellStaffId }];
+    this.cdr.detectChanges();
+  }
+
+  onRenderCell(args: RenderCellEventArgs): void {
+    if (args.elementType !== 'monthCells') return;
+
+    const element = args.element as HTMLElement;
+    const data = (this.eventSettings.dataSource as any[]) || [];
+    
+    const cellStaffId = this.getCellStaffId(args.groupIndex);
+    const isBlocked = data.some(e =>
+      new Date(e.StartTime).toDateString() === args.date!.toDateString() &&
+      e.IsBlock === true &&
+      String(e.StaffId) === String(cellStaffId)
+    );
+
+    if (isBlocked) {
+      element.style.backgroundColor = '#cbd5e1'; 
+      element.style.position = 'relative';
+    } else {
+      element.style.backgroundColor = ''; 
+    }
+  }
+
+  submitAction() {
+    // 1. Validate Date Selection (Required for both scheduling configurations)
+    if (this.selectedSlots.length === 0) {
+      this.triggerToast('Please select a date on the calendar.', 'error');
+      return;
+    }
+
+    const slot = this.selectedSlots[0];
+
+    if (this.isBlockMode) {
+      // ------------------------------------------------------------------
+      // FLOW A: APPLY FULL-DAY SCHEDULE BLOCK OUT (NO NOTIFICATIONS FIRED)
+      // ------------------------------------------------------------------
+      const blockPayload: any = {
+        staffId: String(slot.staffId),
+        serviceName: 'Unavailable',
+        customerName: 'N/A (Staff Block)',
+        dateTime: new Date(slot.date).toISOString(), 
+        isBlock: true,
+        status: 'BLOCKED',
+        notes: this.blockNotes || this.blockReason,
+        price: 0
+      };
+
+      this.apiService.post('/appointments/book', blockPayload).subscribe({
+        next: () => {
+          this.triggerToast('Day Block Applied Successfully');
+          this.selectedSlots = [];
+          this.resetBookingDetails();
+          this.loadBlockedDays();
+        },
+        error: (err) => this.triggerToast(err?.error?.error || 'Failed to apply schedule block', 'error')
+      });
+
+    } else {
+      // ------------------------------------------------------------------
+      // FLOW B: MANDATORY APPOINTMENT DATA ENFORCEMENT
+      // ------------------------------------------------------------------
+      
+      // Enforce Artist Staff Assignment Validation
+      if (!slot.staffId || slot.staffId === 'undefined' || slot.staffId === '') {
+        this.triggerToast('Please select a staff artist for this appointment.', 'error');
+        return;
+      }
+
+      // Enforce Administrative Client Target Validation
+      if (this.isAdmin && !this.selectedCustomer) {
+        this.triggerToast('Please select a customer for this appointment.', 'error');
+        return;
+      }
+
+      // Enforce Service Matrix Selection
+      if (!this.selectedServices || this.selectedServices.length === 0) {
+        this.triggerToast('Please select at least one service.', 'error');
+        return;
+      }
+
+      // Enforce Hourly Timeframe Slot Choice
+      if (!this.selectedTime) {
+        this.triggerToast('Please pick an appointment time.', 'error');
+        return;
+      }
+
+      // Enforce Geographic Location Text Constraints
+      if (!this.location || this.location.trim() === '') {
+        this.triggerToast('Please specify a location for the appointment.', 'error');
+        return;
+      }
+
+      const dateTimeISO = this.combineDateAndTime(slot.date, this.selectedTime);
+      
+      const payload: any = {
+        customerId: this.isAdmin ? String(this.selectedCustomer?._id || this.selectedCustomer?.id) : String(this.apiService.getUserId()),
+        customerName: this.isAdmin ? `${this.selectedCustomer?.firstName} ${this.selectedCustomer?.lastName || ''}`.trim() : this.apiService.getUserName(),
+        staffId: String(slot.staffId),
+        serviceName: this.selectedServices.map(s => s.name).join(', '),
+        dateTime: dateTimeISO,
+        isBlock: false,
+        status: 'PENDING',
+        price: this.totalAmount,
+        notes: this.notes,
+        location: this.location.trim()
+      };
+
+      this.apiService.post('/appointments/book', payload).subscribe({
+        next: () => {
+          this.triggerToast('Booking Requested - Check your email!');
+          this.selectedSlots = [];
+          this.selectedServices = [];
+          this.resetBookingDetails();
+          this.loadBlockedDays();
+        },
+        error: (err) => this.triggerToast(err?.error?.error || 'Failed to book appointment', 'error')
+      });
+    }
+  }
+
+  loadServices() { this.apiService.get<any[]>('/services/all').subscribe(d => this.services = d || []); }
+
+  addService() {
+    const payload = { name: this.newServiceName, price: this.newServicePrice, icon: this.newServiceIcon || this.defaultIcons[0] };
+    this.apiService.post('/services', payload).subscribe(() => this.loadServices());
+  }
+
+  deleteService(service: any) {
+    this.apiService.delete(`/services/${String(service?._id || service?.id)}`).subscribe(() => this.loadServices());
+  }
+
+  loadCustomers() { this.apiService.get<any[]>('/customers/all').subscribe(d => this.customers = d || []); }
+
+  get totalAmount() { return (this.selectedServices || []).reduce((acc, s) => acc + (Number(s.price) || 0), 0); }
+
+  toggleService(service: any) {
+    const key = String(service?._id || service?.id);
+    const i = this.selectedServices.findIndex(s => String(s?._id || s?.id) === key);
+    i > -1 ? this.selectedServices.splice(i, 1) : this.selectedServices.push(service);
+  }
+
+  onPopupOpen(args: PopupOpenEventArgs): void { args.cancel = true; }
+
+  triggerToast(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg; this.toastType = type; this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000);
+  }
+
+  resetBookingDetails() { 
+    this.location = ''; 
+    this.notes = ''; 
+    this.selectedTime = null; 
+    this.blockNotes = '';
+    this.blockReason = 'Salon Closed';
+  }
+
+  private combineDateAndTime(dateObj: Date, timeLabel: string): string {
+    const d = new Date(dateObj);
+    const m = timeLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (m) {
+      let hh = Number(m[1]);
+      if (m[3].toUpperCase() === 'PM' && hh !== 12) hh += 12;
+      else if (m[3].toUpperCase() === 'AM' && hh === 12) hh = 0;
+      d.setHours(hh, Number(m[2]), 0, 0);
+    }
+    return d.toISOString();
+  }
+}
