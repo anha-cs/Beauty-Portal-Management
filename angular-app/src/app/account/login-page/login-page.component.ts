@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angula
 import { ApiService } from '../../service/api.service';
 import { Router, RouterLink } from "@angular/router";
 import { NgIf, NgClass } from "@angular/common";
-import { AuthTimeoutService } from '../../services/auth-timeout.service'; // Adjust this path if your folder structure is different
+import { AuthTimeoutService } from '../../auth-timeout.service';
 
 @Component({
   selector: 'app-login-page',
