@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://www.beautybynguyenha.com'
+  apiUrl: 'https://beauty-portal-management-backend.onrender.com/api'
 };
