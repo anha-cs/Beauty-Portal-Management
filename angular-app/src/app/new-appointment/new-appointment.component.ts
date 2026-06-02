@@ -58,6 +58,10 @@ export class NewAppointmentComponent implements OnInit {
   public notes = '';
   public selectedTime: string | null = null;
 
+  // Track state properties for Schedule Availability Blocks
+  public blockReason: string = 'Salon Closed';
+  public blockNotes: string = '';
+
   public availableTimes: string[] = [
     '08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
     '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM',
@@ -137,121 +141,4 @@ export class NewAppointmentComponent implements OnInit {
           StaffId: String(a.staffId?._id || a.staffId)
         }));
         this.eventSettings = { dataSource: mapped };
-        this.cdr.detectChanges();
-        this.scheduleObj?.refresh();
-      }
-    });
-  }
-
-  onCellClick(args: CellClickEventArgs): void {
-    args.cancel = true;
-    if (!args.startTime) return;
-    const cellStaffId = this.getCellStaffId(args.groupIndex);
-    const data = (this.eventSettings.dataSource as any[]) || [];
-    const existingBlock = data.find(e => new Date(e.StartTime).toDateString() === args.startTime!.toDateString() && e.IsBlock === true && String(e.StaffId) === String(cellStaffId));
-
-    if (existingBlock) {
-      if (confirm('Make this day available?')) {
-        this.apiService.delete(`/appointments/${existingBlock.Id}`).subscribe({
-          next: () => { this.triggerToast('Availability Restored'); this.loadBlockedDays(); }
-        });
-      }
-      return;
-    }
-
-    this.selectedSlots = [{ id: new Date().getTime(), date: args.startTime, staffId: cellStaffId }];
-    this.cdr.detectChanges();
-  }
-
-  onRenderCell(args: RenderCellEventArgs): void {
-    if (args.elementType !== 'monthCells') return;
-
-    const element = args.element as HTMLElement;
-    const data = (this.eventSettings.dataSource as any[]) || [];
-    
-    // Check if the current cell is blocked for the current staff
-    const cellStaffId = this.getCellStaffId(args.groupIndex);
-    const isBlocked = data.some(e =>
-      new Date(e.StartTime).toDateString() === args.date!.toDateString() &&
-      e.IsBlock === true &&
-      String(e.StaffId) === String(cellStaffId)
-    );
-
-    // Apply visual styling for blocked cells
-    if (isBlocked) {
-      element.style.backgroundColor = '#cbd5e1'; // Grey out blocked days
-      element.style.position = 'relative';
-    } else {
-      element.style.backgroundColor = ''; // Reset styling for available days
-    }
-  }
-
-  submitAction() {
-    if (this.selectedSlots.length === 0) return;
-    const slot = this.selectedSlots[0];
-    const dateTimeISO = this.combineDateAndTime(slot.date, this.selectedTime || '08:00 AM');
-    
-    const payload: any = {
-      customerId: this.isAdmin ? String(this.selectedCustomer?._id || this.selectedCustomer?.id) : String(this.apiService.getUserId()),
-      customerName: this.isAdmin ? this.selectedCustomer?.firstName : this.apiService.getUserName(),
-      staffId: String(slot.staffId),
-      serviceName: this.selectedServices.map(s => s.name).join(', '),
-      dateTime: dateTimeISO,
-      isBlock: false,
-      status: 'PENDING',
-      price: this.totalAmount
-    };
-
-    this.apiService.post('/appointments/book', payload).subscribe({
-      next: () => {
-        this.triggerToast('Booking Requested - Check your email!');
-        this.selectedSlots = [];
-        this.selectedServices = [];
-        this.resetBookingDetails();
-      },
-      error: (err) => this.triggerToast(err?.error?.error || 'Failed to book', 'error')
-    });
-  }
-
-  loadServices() { this.apiService.get<any[]>('/services/all').subscribe(d => this.services = d || []); }
-
-  addService() {
-    const payload = { name: this.newServiceName, price: this.newServicePrice, icon: this.newServiceIcon || this.defaultIcons[0] };
-    this.apiService.post('/services', payload).subscribe(() => this.loadServices());
-  }
-
-  deleteService(service: any) {
-    this.apiService.delete(`/services/${String(service?._id || service?.id)}`).subscribe(() => this.loadServices());
-  }
-
-  loadCustomers() { this.apiService.get<any[]>('/customers/all').subscribe(d => this.customers = d || []); }
-
-  get totalAmount() { return (this.selectedServices || []).reduce((acc, s) => acc + (Number(s.price) || 0), 0); }
-
-  toggleService(service: any) {
-    const key = String(service?._id || service?.id);
-    const i = this.selectedServices.findIndex(s => String(s?._id || s?.id) === key);
-    i > -1 ? this.selectedServices.splice(i, 1) : this.selectedServices.push(service);
-  }
-
-  onPopupOpen(args: PopupOpenEventArgs): void { args.cancel = true; }
-
-  triggerToast(msg: string, type: 'success' | 'error' = 'success') {
-    this.toastMessage = msg; this.toastType = type; this.showToast = true;
-    setTimeout(() => this.showToast = false, 3000);
-  }
-
-  resetBookingDetails() { this.location = ''; this.notes = ''; this.selectedTime = null; }
-
-  private combineDateAndTime(dateObj: Date, timeLabel: string): string {
-    const d = new Date(dateObj);
-    const m = timeLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-    if (m) {
-      let hh = Number(m[1]);
-      if (m[3].toUpperCase() === 'PM' && hh !== 12) hh += 12;
-      else if (m[3].toUpperCase() === 'AM' && hh === 12) hh = 0;
-      d.setHours(hh, Number(m[2]), 0, 0);
-    }
-    return d.toISOString();
-  }
-}
+        this.cdr.detectChanges

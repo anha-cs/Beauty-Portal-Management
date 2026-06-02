@@ -200,7 +200,10 @@ public class AppointmentController {
                 if (appointment.getServiceName() == null) appointment.setServiceName("Unavailable");
                 if (appointment.getCustomerName() == null) appointment.setCustomerName("N/A (Staff Block)");
 
+                // Save to database
                 Appointment saved = appointmentRepository.save(appointment);
+                
+                // Return immediately without running emailService.sendBookingConfirmation
                 return ResponseEntity.ok(saved);
             }
 
