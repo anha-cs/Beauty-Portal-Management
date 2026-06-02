@@ -22,7 +22,7 @@ public class EmailService {
     private final String resendApiKey = System.getenv("RESEND_API_KEY");
     
     private final String ADMIN_EMAIL = "hanguyen0714@gmail.com"; 
-    private final String FROM_EMAIL = "beautybynguyenha@gmail.com"; 
+    private final String FROM_EMAIL = "appointments@beautybynguyenha.com"; 
 
     public void sendBookingConfirmation(String customerEmail, Appointment appt) {
         if (resendApiKey == null || resendApiKey.isEmpty()) {
