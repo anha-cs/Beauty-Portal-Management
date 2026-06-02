@@ -21,8 +21,8 @@ public class EmailService {
     // Pulls your API key securely from your system environment variables just like AuthService
     private final String resendApiKey = System.getenv("RESEND_API_KEY");
     
-    private final String ADMIN_EMAIL = "anha@csus.edu"; // Match your working email recipient
-    private final String FROM_EMAIL = "onboarding@resend.dev"; // Using the working free-tier sender domain
+    private final String ADMIN_EMAIL = "hanguyen0714@gmail.com"; 
+    private final String FROM_EMAIL = "beautybynguyenha@gmail.com"; 
 
     public void sendBookingConfirmation(String customerEmail, Appointment appt) {
         if (resendApiKey == null || resendApiKey.isEmpty()) {
