@@ -3,11 +3,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angula
 import { ApiService } from '../../service/api.service';
 import { Router, RouterLink } from "@angular/router";
 import { NgIf, NgClass } from "@angular/common";
+import { AuthTimeoutService } from '../../services/auth-timeout.service'; // Adjust this path if your folder structure is different
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgClass, RouterLink], // Added NgClass here
+  imports: [ReactiveFormsModule, NgIf, NgClass, RouterLink],
   templateUrl: './login-page.component.html',
 })
 export class LoginPageComponent {
@@ -18,7 +19,12 @@ export class LoginPageComponent {
   // 👁️ Properties to handle the password visibility eye toggle feature
   public showPasswordValue: boolean = false;
 
-  constructor(private apiService: ApiService, private router: Router, private fb: FormBuilder) {
+  constructor(
+    private apiService: ApiService, 
+    private router: Router, 
+    private fb: FormBuilder,
+    private authTimeoutService: AuthTimeoutService // 1. Inject the timeout service here
+  ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -44,6 +50,9 @@ export class LoginPageComponent {
         this.isLoading = false;
         // res contains token, role, and user fields (id, firstName)
         this.apiService.setLoginData(res.token, res.role, res);
+
+        // 2. Start tracking inactivity the moment login data is verified and saved
+        this.authTimeoutService.startTracking();
 
         const role = res.role.toUpperCase().replace('ROLE_', '');
         if (role === 'ADMIN' || role === 'STAFF') {
