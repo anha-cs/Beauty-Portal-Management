@@ -189,8 +189,7 @@ export class NewAppointmentComponent implements OnInit {
   }
 
   submitAction() {
-    // 1. Validate Date Selection (Required for both scheduling configurations)
-    if (this.selectedSlots.length === 0) {
+    if (!this.selectedSlots || this.selectedSlots.length === 0) {
       this.triggerToast('Please select a date on the calendar.', 'error');
       return;
     }
@@ -198,9 +197,6 @@ export class NewAppointmentComponent implements OnInit {
     const slot = this.selectedSlots[0];
 
     if (this.isBlockMode) {
-      // ------------------------------------------------------------------
-      // FLOW A: APPLY FULL-DAY SCHEDULE BLOCK OUT (NO NOTIFICATIONS FIRED)
-      // ------------------------------------------------------------------
       const blockPayload: any = {
         staffId: String(slot.staffId),
         serviceName: 'Unavailable',
@@ -223,35 +219,26 @@ export class NewAppointmentComponent implements OnInit {
       });
 
     } else {
-      // ------------------------------------------------------------------
-      // FLOW B: MANDATORY APPOINTMENT DATA ENFORCEMENT
-      // ------------------------------------------------------------------
-      
-      // Enforce Artist Staff Assignment Validation
-      if (!slot.staffId || slot.staffId === 'undefined' || slot.staffId === '') {
+      if (!slot || !slot.staffId || slot.staffId === 'undefined' || slot.staffId === 'null' || slot.staffId === '') {
         this.triggerToast('Please select a staff artist for this appointment.', 'error');
         return;
       }
 
-      // Enforce Administrative Client Target Validation
       if (this.isAdmin && !this.selectedCustomer) {
         this.triggerToast('Please select a customer for this appointment.', 'error');
         return;
       }
 
-      // Enforce Service Matrix Selection
       if (!this.selectedServices || this.selectedServices.length === 0) {
         this.triggerToast('Please select at least one service.', 'error');
         return;
       }
 
-      // Enforce Hourly Timeframe Slot Choice
-      if (!this.selectedTime) {
+      if (!this.selectedTime || this.selectedTime === 'null') {
         this.triggerToast('Please pick an appointment time.', 'error');
         return;
       }
 
-      // Enforce Geographic Location Text Constraints
       if (!this.location || this.location.trim() === '') {
         this.triggerToast('Please specify a location for the appointment.', 'error');
         return;
